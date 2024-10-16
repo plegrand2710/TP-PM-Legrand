@@ -1,0 +1,10 @@
+# Ignore les fichiers temporaires de l'éditeur
+*.swp
+*.tmp
+
+# Ignore les répertoires de build
+/build/
+/out/
+
+# Ignore les fichiers logs
+*.log

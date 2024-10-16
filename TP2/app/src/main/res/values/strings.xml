@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">TP2</string>
+    <string name="label1">Num</string>
+    <string name="label2">Nom</string>
+    <string name="label3">prenom</string>
+    <string name="label4">tel</string>
+    <string name="label5">adresse</string>
+    <string name="label6">cp</string>
+    <string name="label7">email</string>
+    <string name="label8">metier</string>
+    <string name="label9">situation</string>
+    <string name="saisi2">saisir</string>
+    <string name="saisi3">afficher</string>
+    <string name="bfichier">sauvegarder</string>
+    <string name="bajouter">ajouter</string>
+    <string name="bprec">précedent</string>
+    <string name="bsuiv">suivant</string>
+    <string name="bdebut">début</string>
+    <string name="bmilieu">milieu</string>
+    <string name="bfin">fin</string>
+    <string name="bnum">numéro</string>
+    <string name="bsupp">supprimer</string>
+    <string name="dialogue"> Saisir un numéro de contact</string>
+    <string name="ok">ok</string>
+    <string name="annuler">Annuler</string>
+    <string name="invalide">Numéro invalide</string>
+
+</resources>
