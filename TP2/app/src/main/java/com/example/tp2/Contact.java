@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Contact {
 
     // attributs d'instance
-    private int numC ;
+    private int numC = 0;
     private String nom ;
     private String prenom ;
     private String tel ;
@@ -15,8 +15,8 @@ public class Contact {
     private String metier ;
     private String situation ;
     private int miniature ;
-    private ArrayList<String> libelleC;
-    private ArrayList<String> donneeC;
+    private ArrayList<String> libelleC = new ArrayList<String>();
+    private ArrayList<String> donneeC = new ArrayList<String>();
 
     // accès attributs d'instance
     public int get_numC() { return this.numC ; }
@@ -39,10 +39,21 @@ public class Contact {
     public void set_situation(String s)	{ this.situation = s ; }
     public int get_miniature()	{ return this.miniature ; }
     public void set_miniature(int i) { this.miniature = i ; }
-    public ArrayList<String> get_libelleC()	{ return this.libelleC ; }
-    public void set_libelleC(ArrayList<String> a) { this.libelleC = a ; }
-    public ArrayList<String> get_donneeC()	{ return this.donneeC ; }
-    public void set_donneeC(ArrayList<String> a) { this.donneeC = a ; }
+    public ArrayList<String> get_libelleC() {
+        return this.libelleC != null ? this.libelleC : new ArrayList<>();  // Vérification que la liste n'est pas nulle
+    }
+
+    public void set_libelleC(ArrayList<String> a) {
+        this.libelleC = a != null ? a : new ArrayList<>();  // Initialisation si null
+    }
+
+    public ArrayList<String> get_donneeC() {
+        return this.donneeC != null ? this.donneeC : new ArrayList<>();  // Vérification que la liste n'est pas nulle
+    }
+
+    public void set_donneeC(ArrayList<String> a) {
+        this.donneeC = a != null ? a : new ArrayList<>();  // Initialisation si null
+    }
 
 
     // constructeurs
@@ -57,6 +68,8 @@ public class Contact {
         set_metier(metier);
         set_situation(situation);
         set_miniature(miniature);
+        set_donneeC(new ArrayList<>());
+        set_libelleC(new ArrayList<>());
 
     }
     Contact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, int miniature, ArrayList<String> libelle, ArrayList<String> donnee){
@@ -79,11 +92,11 @@ public class Contact {
         get_donneeC().add(donnee);
     }
 
-    public String toString(){
-        StringBuilder chaine ;
-        chaine = new StringBuilder("num : "+ get_numC() + " nom : "+ nom + " ; prenom : " + prenom + " ; tel : " + tel + " ; adresse : " + adresse + " ; cp : " + cp + " ; email : " + email + " ; metier : " + metier + " ; situation : " + situation + " ; miniature : " + miniature);
-        for(int i = 0; i < get_libelleC().size() && i < get_donneeC().size() ; i++){
-            chaine.append( " ; " + get_libelleC().get(i) + " : " + get_donneeC().get(i));
+
+    public String toString() {
+        StringBuilder chaine = new StringBuilder("num : " + get_numC() + " ; nom : " + nom + " ; prenom : " + prenom + " ; tel : " + tel + " ; adresse : " + adresse + " ; cp : " + cp + " ; email : " + email + " ; metier : " + metier + " ; situation : " + situation + " ; miniature : " + miniature);
+        for(int i = 0; i < get_libelleC().size() && i < get_donneeC().size(); i++) {
+            chaine.append(" ; ").append(get_libelleC().get(i)).append(" : ").append(get_donneeC().get(i));
         }
         chaine.append("\n");
         return chaine.toString();

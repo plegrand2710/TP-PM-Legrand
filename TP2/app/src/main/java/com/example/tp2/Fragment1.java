@@ -54,8 +54,9 @@ public class Fragment1 extends Fragment {
         eSituation = (EditText) view.findViewById(R.id.editTextSSituation);
         fminiature = (ImageView) view.findViewById(R.id.imageView);
         a1 = new Annuaire();
-        //a1.lectureContacts(view.getContext(), "fichier1.txt");
+        a1.lectureContacts(view.getContext(), "fichier1.txt");
 
+        Toast.makeText(view.getContext(), "num contact : " + a1.get_num(), Toast.LENGTH_SHORT).show();
         setUpButtonListeners();
         return view;
 
@@ -240,33 +241,54 @@ public class Fragment1 extends Fragment {
         }
     }
 
-    public void cDebut(View v){
-        ncontact = 0 ;
-        chargement();
-    }
+    public void cDebut(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
 
-    public void cSuivant(View v){
-        if(ncontact<a1.get_num()-1){
-            ncontact++ ;
+        if (a1.get_num() > 0) {
+            ncontact = 0;
             chargement();
         }
     }
 
-    public void cPrecedent(View v){
-        if(ncontact>0){
-            ncontact-- ;
+
+    public void cSuivant(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (ncontact < a1.get_num() - 1) {
+            ncontact++;
             chargement();
+        } else {
+            Toast.makeText(view.getContext(), "Dernier contact atteint", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void cFin(View v){
-        ncontact = a1.get_num()-1 ;
-        chargement();
+    public void cPrecedent(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (ncontact > 0) {
+            ncontact--;
+            chargement();
+        } else {
+            Toast.makeText(view.getContext(), "Premier contact atteint", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void cFin(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (a1.get_num() > 0) {
+            ncontact = a1.get_num() - 1;
+            chargement();
+        }
     }
 
     public void cMilieu(View v){
-        ncontact = (a1.get_num()-1)/2 ;
-        chargement();
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (a1.get_num() > 0) {
+            ncontact = (a1.get_num() - 1) / 2;
+            chargement();
+        }
     }
 
     public void cNumero(View v) {
@@ -414,7 +436,7 @@ public class Fragment1 extends Fragment {
     public void chargement(){
         a1.lectureContacts(view.getContext(), "fichier1.txt");
         Contact afficher = a1.get_liste().get(ncontact);
-        tNum.setText(Integer.toString(ncontact+1));
+        //tNum.setText(afficher.get_numC());
         eNom.setText(afficher.get_nom());
         ePrenom.setText(afficher.get_prenom());
         eTel.setText(afficher.get_tel());

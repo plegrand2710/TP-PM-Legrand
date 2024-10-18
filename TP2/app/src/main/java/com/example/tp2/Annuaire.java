@@ -87,26 +87,28 @@ public class Annuaire {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String ligne;
             get_liste().clear();
+            set_num(0);
             Annuaire recreer = this;
 
             while((ligne = bufferedReader.readLine()) != null){
                 String[] infos = ligne.split(" ; ");
                 if(infos.length >= nbChampBase){
-                    String num = infos[0].trim();
-                    String nom = infos[1].trim();
-                    String prenom = infos[2].trim();
-                    String tel = infos[3].trim();
-                    String adresse = infos[4].trim();
-                    String cp = infos[5].trim();
-                    String email = infos[6].trim();
-                    String metier = infos[7].trim();
-                    String situation = infos[8].trim();
-                    int miniature = Integer.parseInt(infos[9]);
-                    Contact temp = new Contact(nom, prenom, tel, adresse, cp, email, situation, metier, miniature);
+                    String num = infos[0].split(" : ")[1].trim();
+                    String nom = infos[1].split(" : ")[1].trim();
+                    String prenom = infos[2].split(" : ")[1].trim();
+                    String tel = infos[3].split(" : ")[1].trim();
+                    String adresse = infos[4].split(" : ")[1].trim();
+                    String cp = infos[5].split(" : ")[1].trim();
+                    String email = infos[6].split(" : ")[1].trim();
+                    String metier = infos[7].split(" : ")[1].trim();
+                    String situation = infos[8].split(" : ")[1].trim();
+                    int miniature = Integer.parseInt(infos[9].split(" : ")[1].trim());
 
+                    Contact temp = new Contact(nom, prenom, tel, adresse, cp, email, situation, metier, miniature);
+                    temp.set_numC(Integer.parseInt(num));
 
                     if(infos.length > nbChampBase){
-                        for (int i = 9; i < infos.length; i++) {
+                        for (int i = nbChampBase; i < infos.length; i++) {
                             String[] autreLib = infos[i].split(" : ");
                             if (autreLib.length == 2) {
                                 String libelle = autreLib[0].trim();
@@ -119,11 +121,13 @@ public class Annuaire {
                     recreer.ajout(temp);
                 }
             }
-
+            bufferedReader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Toast.makeText(c.getApplicationContext(), "Fichier introuvable", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(c.getApplicationContext(), "Erreur de lecture du fichier", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -54,12 +54,13 @@ public class Fragment2 extends Fragment {
         eSituation = (EditText) view.findViewById(R.id.editTextSSituation);
         fminiature = (ImageView) view.findViewById(R.id.imageView);
         a1 = new Annuaire();
-        //a1.lectureContacts(view.getContext(), "fichier1.txt");
+        a1.lectureContacts(view.getContext(), "fichier1.txt");
 
 
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
 
+        Toast.makeText(view.getContext(), "num contact : " + a1.get_num(), Toast.LENGTH_SHORT).show();
         setUpButtonListeners();
         return view;
 
@@ -243,33 +244,55 @@ public class Fragment2 extends Fragment {
         }
     }
 
-    public void cDebut(View v){
-        ncontact = 0 ;
-        chargement();
-    }
 
-    public void cSuivant(View v){
-        if(ncontact<a1.get_num()-1){
-            ncontact++ ;
+    public void cDebut(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (a1.get_num() > 0) {
+            ncontact = 0;
             chargement();
         }
     }
 
-    public void cPrecedent(View v){
-        if(ncontact>0){
-            ncontact-- ;
+
+    public void cSuivant(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (ncontact < a1.get_num() - 1) {
+            ncontact++;
             chargement();
+        } else {
+            Toast.makeText(view.getContext(), "Dernier contact atteint", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void cFin(View v){
-        ncontact = a1.get_num()-1 ;
-        chargement();
+    public void cPrecedent(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (ncontact > 0) {
+            ncontact--;
+            chargement();
+        } else {
+            Toast.makeText(view.getContext(), "Premier contact atteint", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void cFin(View v) {
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (a1.get_num() > 0) {
+            ncontact = a1.get_num() - 1;
+            chargement();
+        }
     }
 
     public void cMilieu(View v){
-        ncontact = (a1.get_num()-1)/2 ;
-        chargement();
+        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
+
+        if (a1.get_num() > 0) {
+            ncontact = (a1.get_num() - 1) / 2;
+            chargement();
+        }
     }
 
     public void cNumero(View v) {
@@ -318,7 +341,6 @@ public class Fragment2 extends Fragment {
         TableLayout tl = view.findViewById(R.id.tableauChamp);
         int count = tl.getChildCount();
 
-        // Parcourt le tableau et supprime toutes les lignes sauf celles de base (si vous en avez par défaut)
         for (int i = count - 1; i > 8; i--) {
             View child = tl.getChildAt(i);
             if (child instanceof TableRow) {
@@ -360,7 +382,6 @@ public class Fragment2 extends Fragment {
         }
     }
 
-
     public void sauvegarder(View v){
         a1.sauvegarder(view.getContext(), "fichier1.txt");
         String nom = eNom.getText().toString();
@@ -382,9 +403,8 @@ public class Fragment2 extends Fragment {
         creer.set_numC(a1.get_num());
         a1.ajout(creer);
         a1.ecritureContact(view.getContext(), "fichier1.txt", creer);
+
         Toast.makeText(view.getContext().getApplicationContext(),"contact créé",Toast.LENGTH_LONG).show();
-        libelleChamp = new ArrayList<>();
-        donneeChamp = new ArrayList<>();
     }
 
 
@@ -420,7 +440,7 @@ public class Fragment2 extends Fragment {
     public void chargement(){
         a1.lectureContacts(view.getContext(), "fichier1.txt");
         Contact afficher = a1.get_liste().get(ncontact);
-        tNum.setText(Integer.toString(ncontact+1));
+        //tNum.setText(afficher.get_numC());
         eNom.setText(afficher.get_nom());
         ePrenom.setText(afficher.get_prenom());
         eTel.setText(afficher.get_tel());
