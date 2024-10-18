@@ -78,13 +78,15 @@ public class Contact {
         get_libelleC().add(libelle);
         get_donneeC().add(donnee);
     }
+
     public String toString(){
         StringBuilder chaine ;
-        chaine = new StringBuilder("nom : "+ nom + " ; prenom : " + prenom + " ; tel : " + tel + " ; adresse : " + adresse + " ; cp : " + cp + " ; email : " + email + " ; metier : " + metier + " ; situation : " + situation + " ; miniature : " + miniature);
+        chaine = new StringBuilder("num : "+ get_numC() + " nom : "+ nom + " ; prenom : " + prenom + " ; tel : " + tel + " ; adresse : " + adresse + " ; cp : " + cp + " ; email : " + email + " ; metier : " + metier + " ; situation : " + situation + " ; miniature : " + miniature);
         for(int i = 0; i < get_libelleC().size() && i < get_donneeC().size() ; i++){
             chaine.append( " ; " + get_libelleC().get(i) + " : " + get_donneeC().get(i));
         }
         chaine.append("\n");
         return chaine.toString();
     }
+
 }

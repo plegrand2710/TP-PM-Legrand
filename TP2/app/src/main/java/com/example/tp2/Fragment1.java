@@ -54,7 +54,7 @@ public class Fragment1 extends Fragment {
         eSituation = (EditText) view.findViewById(R.id.editTextSSituation);
         fminiature = (ImageView) view.findViewById(R.id.imageView);
         a1 = new Annuaire();
-        a1.lectureContacts(view.getContext(), "fichier1.txt");
+        //a1.lectureContacts(view.getContext(), "fichier1.txt");
 
         setUpButtonListeners();
         return view;
@@ -374,8 +374,10 @@ public class Fragment1 extends Fragment {
         }
         int miniature = nImage;
         Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleChamp, donneeChamp);
+        creer.set_numC(a1.get_num());
         a1.ajout(creer);
         a1.ecritureContact(view.getContext(), "fichier1.txt", creer);
+
         Toast.makeText(view.getContext().getApplicationContext(),"contact créé",Toast.LENGTH_LONG).show();
     }
 

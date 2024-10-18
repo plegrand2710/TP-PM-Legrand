@@ -18,6 +18,7 @@ public class Annuaire {
 
     //attribut instances
     private int num = 0 ;
+    private int nbChampBase = 10;
 
     private ArrayList<Contact> liste ;
 
@@ -67,6 +68,7 @@ public class Annuaire {
             FileOutputStream fichier = c.openFileOutput(s, c.MODE_PRIVATE);
             for(int i = 0 ; i < get_num() ; i++){
                 ecritureContact(c, s, get_liste().get(i));
+                get_liste().get(i).set_numC(i);
             }
             fichier.close();
             Toast.makeText(c.getApplicationContext(),"fichier créé",Toast.LENGTH_LONG).show();
@@ -89,35 +91,35 @@ public class Annuaire {
 
             while((ligne = bufferedReader.readLine()) != null){
                 String[] infos = ligne.split(" ; ");
-                if(infos.length >= 9){
-                    String nom = infos[0];
-                    String prenom = infos[1];
-                    String tel = infos[2];
-                    String adresse = infos[3];
-                    String cp = infos[4];
-                    String email = infos[5];
-                    String metier = infos[6];
-                    String situation = infos[7];
-                    int miniature = Integer.parseInt(infos[8]);
+                if(infos.length >= nbChampBase){
+                    String num = infos[0].trim();
+                    String nom = infos[1].trim();
+                    String prenom = infos[2].trim();
+                    String tel = infos[3].trim();
+                    String adresse = infos[4].trim();
+                    String cp = infos[5].trim();
+                    String email = infos[6].trim();
+                    String metier = infos[7].trim();
+                    String situation = infos[8].trim();
+                    int miniature = Integer.parseInt(infos[9]);
                     Contact temp = new Contact(nom, prenom, tel, adresse, cp, email, situation, metier, miniature);
-                    recreer.ajout(temp);
 
-                    if(infos.length > 9){
+
+                    if(infos.length > nbChampBase){
                         for (int i = 9; i < infos.length; i++) {
-                            // Chaque champ supplémentaire est au format "libelle : valeur"
-                            String[] extraField = infos[i].split(" : ");
-                            if (extraField.length == 2) {
-                                String libelle = extraField[0].trim();
-                                String donnee = extraField[1].trim();
-                                // Ajout des libellés et données au contact
+                            String[] autreLib = infos[i].split(" : ");
+                            if (autreLib.length == 2) {
+                                String libelle = autreLib[0].trim();
+                                String donnee = autreLib[1].trim();
                                 temp.ajouterChamp(libelle, donnee);
                             }
                         }
-                    }
-                }
 
+                    }
+                    recreer.ajout(temp);
+                }
             }
-            recreer.set_num(recreer.get_liste().size());
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
