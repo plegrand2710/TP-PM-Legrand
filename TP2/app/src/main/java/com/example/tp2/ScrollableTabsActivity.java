@@ -1,6 +1,8 @@
 package com.example.tp2;
 
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,19 +21,13 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private Annuaire a;
+    private Annuaire a1;
 
-    public ScrollableTabsActivity(Annuaire a1){
-        a = a1 ;
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollable_tabs);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -40,12 +36,19 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    public void setAnnuaire(Annuaire annuaire) {
+        a1 = annuaire;
+    }
+
+    public void setAnnuaire() {
+        a1 = new Annuaire();
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-
-        for(int i = 0 ; i<a.get_num(); i++){
-            adapter.addFrag(new FragmentContact(a.get_liste().get(i)), a.get_liste().get(i).get_nom());
+        for(int i = 0 ; i<a1.get_num(); i++){
+            adapter.addFrag(new FragmentContact(a1.get_liste().get(i)), a1.get_liste().get(i).get_nom());
         }
         viewPager.setAdapter(adapter);
     }
@@ -72,10 +75,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
     }
+
 }

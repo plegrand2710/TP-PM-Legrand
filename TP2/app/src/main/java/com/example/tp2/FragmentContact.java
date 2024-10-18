@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -11,7 +12,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 
 
-public class FragmentContact extends Fragment{
+public class FragmentContact extends Fragment {
 
     private Contact c;
 
@@ -28,32 +29,13 @@ public class FragmentContact extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
-        LinearLayoutCompat.LayoutParams params =
-                new LinearLayoutCompat.LayoutParams(
-                        LinearLayoutCompat.LayoutParams.WRAP_CONTENT,
-                        LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        View rootView = inflater.inflate(R.layout.activity_main2, container, false);
 
-        //---create a layout---
-        LinearLayout layout = new LinearLayout(container.getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
+        EditText et = rootView.findViewById(R.id.editTextSPrenom);
+        et.setText(c.get_prenom());
 
-        TextView t1 = new TextView(container.getContext());
-        t1.setText(c.get_prenom());
-        t1.setLayoutParams(params);
-        TextView t2 = new TextView(container.getContext());
-        t2.setText(c.get_nom());
-        t2.setLayoutParams(params);
-
-
-
-        // Add the TextViews to the layout
-        layout.addView(t1);
-        layout.addView(t2);
-
-        // Return the dynamic layout
-        return layout;
+        return rootView;
     }
 
 }

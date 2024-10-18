@@ -4,13 +4,18 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class Fragment2 extends Fragment {
@@ -28,6 +33,10 @@ public class Fragment2 extends Fragment {
     int nImage = 1 ;
     int ncontact = 0 ;
     View view ;
+    ArrayList<String> libelleChamp = null;
+    ArrayList<String> donneeChamp = null;
+    ArrayList<Integer> idTextView = null;
+    ArrayList<Integer> idEditText = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -46,6 +55,10 @@ public class Fragment2 extends Fragment {
         fminiature = (ImageView) view.findViewById(R.id.imageView);
         a1 = new Annuaire();
         a1.lectureContacts(view.getContext(), "fichier1.txt");
+
+
+        idEditText = new ArrayList<>();
+        idTextView = new ArrayList<>();
 
         setUpButtonListeners();
         return view;
@@ -140,7 +153,81 @@ public class Fragment2 extends Fragment {
                 sauvegarder(v);
             }
         });
+
+        // Bouton "ajouter Champ"
+        view.findViewById(R.id.bajouterChamp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cAjouterChamp(v);
+            }
+        });
     }
+
+    public void cAjouterChamp(View v) {
+        libelleChamp = new ArrayList<>();
+        donneeChamp = new ArrayList<>();
+        // Création d'une boîte de dialogue
+        AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
+        dialog.setTitle(R.string.ajouterChamp);
+
+
+        // Champ de saisie dans la boîte de dialogue
+        EditText et = new EditText(view.getContext());
+        et.setInputType(InputType.TYPE_CLASS_TEXT);
+        dialog.setView(et);
+
+        // Bouton "OK" pour valider l'ajout
+        dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int nul) {
+                String libelle = et.getText().toString();
+                if (!libelle.isEmpty()) {
+                    TableLayout tl = view.findViewById(R.id.tableauChamp);
+
+                    TableRow tr = new TableRow(view.getContext());
+
+                    TableRow existingRow = (TableRow) tl.getChildAt(0);
+                    TableRow.LayoutParams existingParams = (TableRow.LayoutParams) existingRow.getChildAt(0).getLayoutParams();
+
+                    TextView tv = new TextView(view.getContext());
+                    int textViewid = View.generateViewId();
+                    tv.setId(textViewid);
+                    tv.setText(libelle);
+                    tv.setLayoutParams(existingParams);
+                    tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    tv.setTextColor(getResources().getColor(R.color.textview));
+
+                    EditText et1 = new EditText(view.getContext());
+                    int editTextId = View.generateViewId();
+                    et1.setId(editTextId);
+                    et1.setInputType(InputType.TYPE_CLASS_TEXT);
+                    et1.setLayoutParams(existingParams);
+                    et1.setHint("saisir");
+
+                    idTextView.add(tv.getId());
+                    idEditText.add(et1.getId());
+
+                    tr.addView(tv);
+                    tr.addView(et1);
+
+                    tl.addView(tr);
+
+
+                }
+            }
+        });
+
+        // Bouton "Annuler" pour fermer la boîte de dialogue
+        dialog.setNegativeButton(R.string.annuler, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int nul) {
+                dialog.cancel();
+            }
+        });
+        // Affichage de la boîte de dialogue
+        dialog.show();
+    }
+
 
     public void bMoins(View v){
         if(nImage>=2){
@@ -190,7 +277,7 @@ public class Fragment2 extends Fragment {
         dialog.setTitle(R.string.dialogue);
 
         EditText et = new EditText(view.getContext());
-        et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
         dialog.setView(et);
 
         dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -225,8 +312,20 @@ public class Fragment2 extends Fragment {
         a1.supprimer(--supp, view.getContext(), "fichier1.txt");
     }
 
-    public void ajouter(View v){
+    public void ajouter(View v) {
         tNum.setText("" + (a1.get_num()+1));
+
+        TableLayout tl = view.findViewById(R.id.tableauChamp);
+        int count = tl.getChildCount();
+
+        // Parcourt le tableau et supprime toutes les lignes sauf celles de base (si vous en avez par défaut)
+        for (int i = count - 1; i > 8; i--) {
+            View child = tl.getChildAt(i);
+            if (child instanceof TableRow) {
+                tl.removeView(child);
+            }
+        }
+
         eNom.setHint("saisir");
         ePrenom.setHint("saisir");
         eTel.setHint("saisir");
@@ -243,10 +342,24 @@ public class Fragment2 extends Fragment {
         eMetier.setText("");
         eEmail.setText("");
         eSituation.setText("");
-        fminiature.setImageResource(R.drawable.client1);
-        nImage = 1 ;
 
+        fminiature.setImageResource(R.drawable.client1);
+        nImage = 1;
+
+        if (libelleChamp != null) {
+            libelleChamp.clear();
+        }
+        if (donneeChamp != null) {
+            donneeChamp.clear();
+        }
+        if (idTextView != null) {
+            idTextView.clear();
+        }
+        if (idEditText != null) {
+            idEditText.clear();
+        }
     }
+
 
     public void sauvegarder(View v){
         a1.sauvegarder(view.getContext(), "fichier1.txt");
@@ -258,11 +371,19 @@ public class Fragment2 extends Fragment {
         String email = eEmail.getText().toString();
         String metier = eMetier.getText().toString();
         String situation = eSituation.getText().toString();
+        for(int i = 0 ; i < idTextView.size() && i < idEditText.size() ; i++){
+            TextView tempT = (TextView) view.findViewById(idTextView.get(i));
+            EditText tempE = (EditText) view.findViewById(idEditText.get(i));
+            libelleChamp.add(tempT.getText().toString());
+            donneeChamp.add(tempE.getText().toString());
+        }
         int miniature = nImage;
-        Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature);
+        Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleChamp, donneeChamp);
         a1.ajout(creer);
         a1.ecritureContact(view.getContext(), "fichier1.txt", creer);
         Toast.makeText(view.getContext().getApplicationContext(),"contact créé",Toast.LENGTH_LONG).show();
+        libelleChamp = new ArrayList<>();
+        donneeChamp = new ArrayList<>();
     }
 
 
