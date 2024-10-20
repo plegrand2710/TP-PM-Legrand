@@ -57,7 +57,19 @@ public class Contact {
 
 
     // constructeurs
-    Contact(){}
+    Contact(){
+        set_nom("");
+        set_prenom("");
+        set_tel("");
+        set_adresse("");
+        set_cp("");
+        set_email("");
+        set_metier("");
+        set_situation("");
+        set_miniature(1);
+        set_donneeC(new ArrayList<>());
+        set_libelleC(new ArrayList<>());
+    }
     Contact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, int miniature){
         set_nom(nom);
         set_prenom(prenom);
