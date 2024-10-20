@@ -60,7 +60,6 @@ public class Fragment2 extends Fragment {
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
 
-        Toast.makeText(view.getContext(), "num contact : " + a1.get_num(), Toast.LENGTH_SHORT).show();
         setUpButtonListeners();
         return view;
 
@@ -167,17 +166,15 @@ public class Fragment2 extends Fragment {
     public void cAjouterChamp(View v) {
         libelleChamp = new ArrayList<>();
         donneeChamp = new ArrayList<>();
-        // Création d'une boîte de dialogue
+        idEditText = new ArrayList<>();
+        idTextView = new ArrayList<>();
         AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
         dialog.setTitle(R.string.ajouterChamp);
 
-
-        // Champ de saisie dans la boîte de dialogue
         EditText et = new EditText(view.getContext());
         et.setInputType(InputType.TYPE_CLASS_TEXT);
         dialog.setView(et);
 
-        // Bouton "OK" pour valider l'ajout
         dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int nul) {
@@ -218,14 +215,12 @@ public class Fragment2 extends Fragment {
             }
         });
 
-        // Bouton "Annuler" pour fermer la boîte de dialogue
         dialog.setNegativeButton(R.string.annuler, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int nul) {
                 dialog.cancel();
             }
         });
-        // Affichage de la boîte de dialogue
         dialog.show();
     }
 
@@ -244,10 +239,7 @@ public class Fragment2 extends Fragment {
         }
     }
 
-
     public void cDebut(View v) {
-        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
-
         if (a1.get_num() > 0) {
             ncontact = 0;
             chargement();
@@ -256,8 +248,6 @@ public class Fragment2 extends Fragment {
 
 
     public void cSuivant(View v) {
-        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
-
         if (ncontact < a1.get_num() - 1) {
             ncontact++;
             chargement();
@@ -267,8 +257,6 @@ public class Fragment2 extends Fragment {
     }
 
     public void cPrecedent(View v) {
-        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
-
         if (ncontact > 0) {
             ncontact--;
             chargement();
@@ -278,8 +266,6 @@ public class Fragment2 extends Fragment {
     }
 
     public void cFin(View v) {
-        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
-
         if (a1.get_num() > 0) {
             ncontact = a1.get_num() - 1;
             chargement();
@@ -287,8 +273,6 @@ public class Fragment2 extends Fragment {
     }
 
     public void cMilieu(View v){
-        Toast.makeText(view.getContext(), "ncontact = " + ncontact + "a1 = " + a1.get_num(), Toast.LENGTH_SHORT).show();
-
         if (a1.get_num() > 0) {
             ncontact = (a1.get_num() - 1) / 2;
             chargement();
@@ -338,15 +322,7 @@ public class Fragment2 extends Fragment {
     public void ajouter(View v) {
         tNum.setText("" + (a1.get_num()+1));
 
-        TableLayout tl = view.findViewById(R.id.tableauChamp);
-        int count = tl.getChildCount();
-
-        for (int i = count - 1; i > 8; i--) {
-            View child = tl.getChildAt(i);
-            if (child instanceof TableRow) {
-                tl.removeView(child);
-            }
-        }
+        clearAffichage();
 
         eNom.setHint("saisir");
         ePrenom.setHint("saisir");
@@ -367,6 +343,18 @@ public class Fragment2 extends Fragment {
 
         fminiature.setImageResource(R.drawable.client1);
         nImage = 1;
+    }
+
+    public void clearAffichage(){
+        TableLayout tl = view.findViewById(R.id.tableauChamp);
+        int count = tl.getChildCount();
+
+        for (int i = count - 1; i > 8; i--) {
+            View child = tl.getChildAt(i);
+            if (child instanceof TableRow) {
+                tl.removeView(child);
+            }
+        }
 
         if (libelleChamp != null) {
             libelleChamp.clear();
@@ -438,17 +426,57 @@ public class Fragment2 extends Fragment {
     }
 
     public void chargement(){
+        clearAffichage();
         a1.lectureContacts(view.getContext(), "fichier1.txt");
         Contact afficher = a1.get_liste().get(ncontact);
-        //tNum.setText(afficher.get_numC());
-        eNom.setText(afficher.get_nom());
-        ePrenom.setText(afficher.get_prenom());
-        eTel.setText(afficher.get_tel());
-        eAdresse.setText(afficher.get_adresse());
-        eCp.setText(afficher.get_cp());
-        eEmail.setText(afficher.get_email());
-        eMetier.setText(afficher.get_metier());
-        eSituation.setText(afficher.get_situation());
+        tNum.setText("" + (afficher.get_numC()+1));
+        eNom.setText(afficher.get_nom().isEmpty() ? "non renseigné" : afficher.get_nom());
+        ePrenom.setText(afficher.get_prenom().isEmpty() ? "non renseigné" : afficher.get_prenom());
+        eTel.setText(afficher.get_tel().isEmpty() ? "non renseigné" : afficher.get_tel());
+        eAdresse.setText(afficher.get_adresse().isEmpty() ? "non renseigné" : afficher.get_adresse());
+        eCp.setText(afficher.get_cp().isEmpty() ? "non renseigné" : afficher.get_cp());
+        eEmail.setText(afficher.get_email().isEmpty() ? "non renseigné" : afficher.get_email());
+        eMetier.setText(afficher.get_metier().isEmpty() ? "non renseigné" : afficher.get_metier());
+        eSituation.setText(afficher.get_situation().isEmpty() ? "non renseigné" : afficher.get_situation());
         image(afficher.get_miniature());
+
+        if(!afficher.get_libelleC().isEmpty() && !afficher.get_donneeC().isEmpty()){
+            for (int i = 0; i < afficher.get_libelleC().size(); i++) {
+                String libelle = afficher.get_libelleC().get(i);
+                String donnee = afficher.get_donneeC().get(i);
+
+                if (!libelle.isEmpty() && !donnee.isEmpty()) {
+                    TableLayout tl = view.findViewById(R.id.tableauChamp);
+
+                    TableRow tr = new TableRow(view.getContext());
+
+                    TableRow existingRow = (TableRow) tl.getChildAt(0);
+                    TableRow.LayoutParams existingParams = (TableRow.LayoutParams) existingRow.getChildAt(0).getLayoutParams();
+
+                    TextView tv = new TextView(view.getContext());
+                    int textViewid = View.generateViewId();
+                    tv.setId(textViewid);
+                    tv.setText(libelle);
+                    tv.setLayoutParams(existingParams);
+                    tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    tv.setTextColor(getResources().getColor(R.color.textview));
+
+                    EditText et1 = new EditText(view.getContext());
+                    int editTextId = View.generateViewId();
+                    et1.setId(editTextId);
+                    et1.setInputType(InputType.TYPE_CLASS_TEXT);
+                    et1.setLayoutParams(existingParams);
+                    et1.setText(donnee);
+
+                    idTextView.add(tv.getId());
+                    idEditText.add(et1.getId());
+
+                    tr.addView(tv);
+                    tr.addView(et1);
+
+                    tl.addView(tr);
+                }
+            }
+        }
     }
 }
