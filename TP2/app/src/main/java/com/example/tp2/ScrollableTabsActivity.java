@@ -34,14 +34,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollable_tabs);
 
-        fragments = new ArrayList<>();
-        a1 = new Annuaire();
-        a1.lectureContacts(this, "fichier1.txt");
-
         initialiseFragments();
-
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
 
     }
 
@@ -89,6 +82,9 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     }
 
     public void initialiseFragments() {
+        fragments = new ArrayList<>();
+        a1 = new Annuaire();
+        a1.lectureContacts(this, "fichier1.txt");
         if (a1.get_num() > 0) {
             for (int i = 0; i < a1.get_num(); i++) {
                 Contact contact = a1.get_liste().get(i);
@@ -96,6 +92,13 @@ public class ScrollableTabsActivity extends AppCompatActivity {
                 fragments.add(fragmentContact);
             }
         }
+        else {
+            FragmentContact fr = new FragmentContactNouveau();
+            fragments.add(fr);
+        }
+
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
     }
 
     public void setupViewPager(ViewPager viewPager) {

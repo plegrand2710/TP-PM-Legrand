@@ -46,6 +46,10 @@ public class FragmentContact extends Fragment {
         c = c1;
     }
 
+    public FragmentContact(){
+        c = new Contact();
+    }
+
 
 
 
@@ -369,53 +373,17 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
-        int supp ;
-        String num = tNum.getText().toString() ;
-        supp = Integer.parseInt(num) ;
-        activity.get_annuaire().supprimer(--supp, view.getContext(), "fichier1.txt");
-        activity.initialiseFragments();
-        activity.setupViewPager(activity.get_viewPager());
+        activity.get_annuaire().supprimer((activity.obtenirPositionActuelle()-1), view.getContext(), "fichier1.txt");
+        resetViewPager();
     }
 
-    public void setTNum(int n) {
-        tNum.setText(String.valueOf(n));
-
-    }
 
     public void ajouter(View v) {
-        // Créer un nouveau contact
-        Contact contact = new Contact();
-
-        // Créer un nouveau fragment pour ce contact
-        FragmentContact newFragment = new FragmentContact(contact);
-
-        // Ajouter le nouveau fragment à la liste des fragments
-        activity.get_fragments().add(newFragment);
-
-        // Mettre à jour l'adaptateur du ViewPager pour prendre en compte les nouveaux fragments
+        FragmentContactNouveau fragmentNouveau = new FragmentContactNouveau();
+        activity.get_fragments().add(fragmentNouveau);
         activity.get_viewPagerAdapter().notifyDataSetChanged();
-
-        // Configurer et actualiser le ViewPager
         activity.setupViewPager(activity.get_viewPager());
-
-        // Obtenir le nouveau fragment à partir de sa position
-        Fragment fragment = activity.get_fragments().get(activity.get_fragments().size() - 1);
-
-        // Vérifier si c'est bien un FragmentContact
-        if (fragment instanceof FragmentContact) {
-            FragmentContact fragmentContact = (FragmentContact) fragment;
-
-            // Accéder aux EditText et TextView du nouveau fragment
-            View fragmentView = fragmentContact.getView();
-            if (fragmentView != null) {
-                EditText eNom = fragmentView.findViewById(R.id.editTextSNom);
-                TextView tNum = fragmentView.findViewById(R.id.textViewSNum);
-
-                // Maintenant tu peux manipuler eNom et tNum
-                eNom.setText("Nom par défaut");
-                tNum.setText("4");
-            }
-        }
+        activity.obtenirFragmentContact(activity.get_fragments().size()-1);
     }
 
 
@@ -440,11 +408,23 @@ public class FragmentContact extends Fragment {
         Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleChamp, donneeChamp);
         creer.set_numC(activity.get_annuaire().get_num());
         activity.get_annuaire().ajout(creer);
+        FragmentContact fc = new FragmentContact(creer);
         activity.get_annuaire().ecritureContact(view.getContext(), "fichier1.txt", creer);
+        activity.get_fragments().add(fc);
+
+        resetViewPager();
+
+        Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
+    }
+
+    private void resetViewPager() {
+
+        activity.get_fragments().clear();
+        activity.get_viewPagerAdapter().clearFragments();
+
+        activity.get_viewPagerAdapter().notifyDataSetChanged();
 
         activity.initialiseFragments();
-        activity.setupViewPager(activity.get_viewPager());
-        Toast.makeText(view.getContext().getApplicationContext(),"contact créé",Toast.LENGTH_LONG).show();
     }
 
 
