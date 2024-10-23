@@ -1,23 +1,12 @@
 package com.example.tp2;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
-
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +16,11 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     Annuaire a1 ;
     private ViewPager viewPager;
     private ArrayList<Fragment> fragments = null;
-    ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+    ViewPagerAdapter adapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrollable_tabs);
 
         initialiseFragments();
 
@@ -76,12 +64,23 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         }
     }
 
-
     public int obtenirPositionActuelle() {
         return viewPager.getCurrentItem();
     }
 
+    public void resetViewPager() {
+        fragments.clear();
+        adapter.clearFragments();
+        adapter.notifyDataSetChanged();
+
+        initialiseFragments();
+    }
+
     public void initialiseFragments() {
+        setContentView(R.layout.activity_scrollable_tabs);
+        fragments.clear();
+        adapter.clearFragments();
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         fragments = new ArrayList<>();
         a1 = new Annuaire();
         a1.lectureContacts(this, "fichier1.txt");
@@ -98,15 +97,16 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.clearOnPageChangeListeners();
         setupViewPager(viewPager);
     }
 
     public void setupViewPager(ViewPager viewPager) {
         adapter.clearFragments();
-
-            for(int i = 0 ; i<fragments.size(); i++){
-                adapter.addFrag(fragments.get(i), "");
-            }
+        for(int i = 0 ; i<fragments.size(); i++){
+            adapter.addFrag(fragments.get(i), "");
+        }
+        adapter.notifyDataSetChanged();
 
         viewPager.setAdapter(adapter);
     }
@@ -138,6 +138,11 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             mFragmentList.clear();
             mFragmentTitleList.clear();
             notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
     }

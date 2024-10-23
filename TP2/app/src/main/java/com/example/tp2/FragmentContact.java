@@ -9,13 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -49,9 +47,6 @@ public class FragmentContact extends Fragment {
     public FragmentContact(){
         c = new Contact();
     }
-
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -373,8 +368,8 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
-        activity.get_annuaire().supprimer((activity.obtenirPositionActuelle()-1), view.getContext(), "fichier1.txt");
-        resetViewPager();
+        activity.get_annuaire().supprimer(activity.obtenirPositionActuelle(), view.getContext(), "fichier1.txt");
+
     }
 
 
@@ -412,19 +407,9 @@ public class FragmentContact extends Fragment {
         activity.get_annuaire().ecritureContact(view.getContext(), "fichier1.txt", creer);
         activity.get_fragments().add(fc);
 
-        resetViewPager();
+        activity.resetViewPager();
 
         Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
-    }
-
-    private void resetViewPager() {
-
-        activity.get_fragments().clear();
-        activity.get_viewPagerAdapter().clearFragments();
-
-        activity.get_viewPagerAdapter().notifyDataSetChanged();
-
-        activity.initialiseFragments();
     }
 
 
