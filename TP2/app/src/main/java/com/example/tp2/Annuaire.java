@@ -43,18 +43,13 @@ public class Annuaire {
     }
 
     public void supprimer(int i, Context c, String s){
-        if(i >= 0 && i < get_liste().size()){
-            get_liste().remove(i);
-            dec_num();
-            for(int j = 0 ; j < this.get_liste().size() ; j++){
-                this.get_liste().get(j).set_numC(j);
-            }
-            this.sauvegarder(c, s);
+        get_liste().remove(i);
+        dec_num();
+        for(int j = 0 ; j < this.get_liste().size() ; j++){
+            this.get_liste().get(i).set_numC(j);
         }
-
+        this.sauvegarder(c, s);
     }
-
-
 
     // permet d'ajouter 1 contact
     public void ecritureContact(Context c, String s, Contact ctt) {
@@ -62,6 +57,7 @@ public class Annuaire {
             FileOutputStream fichier = c.openFileOutput(s, Context.MODE_APPEND);
             fichier.write(ctt.toString().getBytes());
             fichier.close();
+            Toast.makeText(c.getApplicationContext(),"contact ajouté",Toast.LENGTH_LONG).show();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
