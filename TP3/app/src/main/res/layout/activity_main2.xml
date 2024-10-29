@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.tp2.MainActivity"
+    tools:layout_editor_absoluteY="0dp"
+    tools:layout_editor_absoluteX="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="252dp">
+
+        <Button
+            android:id="@+id/bouttonAvant"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:onClick="bMoins"
+            android:padding="0dp"
+            android:paddingStart="9dp"
+            android:paddingLeft="0dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="0dp"
+            android:paddingRight="0dp"
+            android:paddingBottom="0dp"
+            android:rotation="90"
+            android:textAlignment="center"
+            app:icon="@android:drawable/arrow_down_float"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/frameLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="168dp"
+            android:layout_height="149dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/bouttonApres"
+            app:layout_constraintStart_toEndOf="@+id/bouttonAvant"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.504">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:src="" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/bouttonApres"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:onClick="bPlus"
+            android:padding="0px"
+            android:paddingStart="9dp"
+            android:paddingLeft="0dp"
+            android:paddingTop="00dp"
+            android:paddingEnd="0dp"
+            android:paddingRight="00dp"
+            android:paddingBottom="0px"
+            android:rotation="90"
+            android:textAlignment="center"
+            app:icon="@android:drawable/arrow_up_float"
+            app:iconPadding="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/frameLayout"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/bajouterChamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/bajouterchamp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+            android:textColor="#2196F3"
+            android:textColorHighlight="#FF9800"
+            android:textColorHint="#FAFAFA"
+            android:textColorLink="#EB4D42"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="375dp">
+
+        <TableLayout
+            android:id="@+id/tableauChamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewNum"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label1"/>
+
+                <TextView
+                    android:id="@+id/textViewSNum"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/saisi3" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewNom"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label2" />
+
+                <EditText
+                    android:id="@+id/editTextSNom"
+                    style="@style/EditTextStyle"/>
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewPrenom"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label3" />
+
+                <EditText
+                    android:id="@+id/editTextSPrenom"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewTel"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label4" />
+
+                <EditText
+                    android:id="@+id/editTextSTel"
+                    android:inputType="phone"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewAdresse"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label5" />
+
+                <EditText
+                    android:id="@+id/editTextSAdresse"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewCp"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label6" />
+
+                <EditText
+                    android:id="@+id/editTextSCp"
+                    android:inputType="number"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewEmail"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label7" />
+
+                <EditText
+                    android:id="@+id/editTextSEmail"
+                    android:inputType="textEmailAddress"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewMetier"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label8" />
+
+                <EditText
+                    android:id="@+id/editTextSMetier"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+            <TableRow
+                style="@style/TableRowStyle">
+
+                <TextView
+                    android:id="@+id/textViewSituation"
+                    style="@style/TextViewStyle"
+                    android:hint="@string/label9" />
+
+                <EditText
+                    android:id="@+id/editTextSSituation"
+                    style="@style/EditTextStyle" />
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
+
+
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            style="@style/TableRowStyle">
+
+            <Button
+                android:id="@+id/bouttonDebut"
+                android:hint="@string/bdebut"
+                android:onClick="cDebut"
+                style="@style/ButtonStyle"/>
+
+            <Button
+                android:id="@+id/bouttonSuivant"
+                android:hint="@string/bsuiv"
+                android:onClick="cSuivant"
+                style="@style/ButtonStyle" />
+
+            <Button
+                android:id="@+id/bouttonPrecedent"
+                android:hint="@string/bprec"
+                android:onClick="cPrecedent"
+                style="@style/ButtonStyle" />
+
+            <Button
+                android:id="@+id/bouttonFin"
+                android:hint="@string/bfin"
+                android:onClick="cFin"
+                style="@style/ButtonStyle" />
+
+            <Button
+                android:id="@+id/bouttonMilieu"
+                android:hint="@string/bmilieu"
+                android:onClick="cMilieu"
+                style="@style/ButtonStyle" />
+
+        </TableRow>
+
+        <TableRow
+            style="@style/TableRowStyle">
+
+            <Button
+                android:id="@+id/bouttonNumero"
+                android:hint="@string/bnum"
+                android:onClick="cNumero"
+                style="@style/ButtonStyle"/>
+
+            <Button
+                android:id="@+id/bouttonSupprimer"
+                android:hint="@string/bsupp"
+                android:onClick="cSupprimer"
+                style="@style/ButtonStyle" />
+
+            <Button
+                android:id="@+id/bouttonAjouter"
+                android:hint="@string/bajouter"
+                android:onClick="ajouter"
+                style="@style/ButtonStyle" />
+
+            <Button
+                android:id="@+id/bouttonSauvegarder"
+                android:hint="@string/bfichier"
+                android:onClick="sauvegarder"
+                style="@style/ButtonStyle"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>
