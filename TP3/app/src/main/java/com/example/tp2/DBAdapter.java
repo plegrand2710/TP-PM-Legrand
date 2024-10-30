@@ -43,6 +43,15 @@ public class DBAdapter {
                     KEY_LIBELLE + " TEXT NOT NULL, " +
                     KEY_DONNEE + " TEXT NOT NULL );";
 
+    static final String TABLE_CC = "contact_champ";
+    static final String KEY_IDTUPLE = "idTuple";
+    static final String KEY_NUMCONTACT = "num";
+    static final String KEY_IDCHAMP = "idChamp";
+    static final String CREATE_TABLE_CC =
+            "CREATE TABLE " + TABLE_CC + " (" +
+                    KEY_IDTUPLE + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    KEY_NUMCONTACT + " INTEGER NOT NULL, " +
+                    KEY_IDCHAMP + " INTEGER NOT NULL );";
 
     static final String TAG = "DBAdapter";
     static final String DATABASE_NAME = "CarnetContactDB";
@@ -66,6 +75,7 @@ public class DBAdapter {
             try {
                 db.execSQL(CREATE_TABLE_CONTACTS);
                 db.execSQL(CREATE_TABLE_CHAMPS);
+                db.execSQL(CREATE_TABLE_CC);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -77,6 +87,7 @@ public class DBAdapter {
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAMPS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CC);
             onCreate(db);
         }
     }
@@ -90,7 +101,6 @@ public class DBAdapter {
         DBHelper.close();
     }
 
-    /*méthodes pour la table Contact*/
 
     public long insertContact(Integer num, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation) {
         ContentValues values = new ContentValues();
@@ -128,8 +138,6 @@ public class DBAdapter {
         return db.delete(TABLE_CONTACTS, KEY_NUMERO + "=?", new String[]{String.valueOf(num)});
     }
 
-    /*méthodes pour la table Champs*/
-
     public long insertChamp(Integer id, String libelle, String donnee) {
         ContentValues values = new ContentValues();
         values.put(KEY_IDCHAMPS, id);
@@ -152,5 +160,29 @@ public class DBAdapter {
 
     public int deleteChamp(int id) {
         return db.delete(TABLE_CHAMPS, KEY_IDCHAMPS + "=?", new String[]{String.valueOf(id)});
+    }
+
+    public long insertCc(Integer id, String numContact, String idChamp) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_IDTUPLE, id);
+        values.put(KEY_NUMCONTACT, numContact);
+        values.put(KEY_IDCHAMP, idChamp);
+        return db.insert(DBAdapter.TABLE_CC, null, values);
+    }
+
+    public Cursor getCc(String id) {
+        return db.query(DBAdapter.TABLE_CC, null, DBAdapter.KEY_IDTUPLE + "=?", new String[]{id}, null, null, null);
+    }
+
+    public int updateCc(Integer id, String numContact, String idChamp) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_IDTUPLE, id);
+        values.put(KEY_NUMCONTACT, numContact);
+        values.put(KEY_IDCHAMP, idChamp);
+        return db.update(TABLE_CC, values, KEY_IDTUPLE + "=?", new String[]{String.valueOf(id)});
+    }
+
+    public int deleteCc(int id) {
+        return db.delete(TABLE_CC, KEY_IDTUPLE + "=?", new String[]{String.valueOf(id)});
     }
 }
