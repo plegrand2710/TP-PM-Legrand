@@ -96,15 +96,21 @@ public class DBAdapter {
         return db.query(DBAdapter.TABLE_CONTACTS, null, DBAdapter.KEY_NUMERO + "=?", new String[]{num}, null, null, null);
     }
 
-    /*public int updateUtilisateur(int idUtilisateur, String identifiant, String mdp, String role) {
+    public int updateContact(Integer numAct, Integer numNv, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation) {
         ContentValues values = new ContentValues();
-        values.put(KEY_IDENTIFIANT, identifiant);
-        values.put(KEY_MDP, mdp);
-        values.put(KEY_ROLE, role);
-        return db.update(TABLE_UTILISATEURS, values, KEY_IDUTILISATEUR + "=?", new String[]{String.valueOf(idUtilisateur)});
+        values.put(KEY_NUMERO, numNv);
+        values.put(KEY_NOM, nom);
+        values.put(KEY_PRENOM, prenom);
+        values.put(KEY_TEL, tel);
+        values.put(KEY_ADRESSE, adresse);
+        values.put(KEY_CP, cp);
+        values.put(KEY_EMAIL, email);
+        values.put(KEY_METIER, metier);
+        values.put(KEY_SITUATION, situation);
+        return db.update(TABLE_CONTACTS, values, KEY_NUMERO + "=?", new String[]{String.valueOf(numAct)});
     }
 
-    public int deleteUtilisateur(int idUtilisateur) {
-        return db.delete(TABLE_UTILISATEURS, KEY_IDUTILISATEUR + "=?", new String[]{String.valueOf(idUtilisateur)});
-    }*/
+    public int deleteContact(int num) {
+        return db.delete(TABLE_CONTACTS, KEY_NUMERO + "=?", new String[]{String.valueOf(num)});
+    }
 }
