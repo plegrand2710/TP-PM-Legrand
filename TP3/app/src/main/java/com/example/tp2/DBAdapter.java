@@ -33,9 +33,19 @@ public class DBAdapter {
                     KEY_SITUATION + " TEXT NOT NULL);";
 
 
+    static final String TABLE_CHAMPS = "champs";
+    static final String KEY_IDCHAMPS = "id";
+    static final String KEY_LIBELLE = "libelle";
+    static final String KEY_DONNEE = "donnée";
+    static final String CREATE_TABLE_CHAMPS =
+            "CREATE TABLE " + TABLE_CHAMPS + " (" +
+                    KEY_IDCHAMPS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    KEY_LIBELLE + " TEXT NOT NULL, " +
+                    KEY_DONNEE + " TEXT NOT NULL );";
+
 
     static final String TAG = "DBAdapter";
-    static final String DATABASE_NAME = "MyDB";
+    static final String DATABASE_NAME = "CarnetContactDB";
     static final int DATABASE_VERSION = 1;
     final Context context;
     DatabaseHelper DBHelper;
@@ -55,6 +65,7 @@ public class DBAdapter {
         public void onCreate(SQLiteDatabase db) {
             try {
                 db.execSQL(CREATE_TABLE_CONTACTS);
+                db.execSQL(CREATE_TABLE_CHAMPS);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -65,6 +76,7 @@ public class DBAdapter {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAMPS);
             onCreate(db);
         }
     }
@@ -77,6 +89,8 @@ public class DBAdapter {
     public void close() {
         DBHelper.close();
     }
+
+    /*méthodes pour la table Contact*/
 
     public long insertContact(Integer num, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation) {
         ContentValues values = new ContentValues();
@@ -112,5 +126,31 @@ public class DBAdapter {
 
     public int deleteContact(int num) {
         return db.delete(TABLE_CONTACTS, KEY_NUMERO + "=?", new String[]{String.valueOf(num)});
+    }
+
+    /*méthodes pour la table Champs*/
+
+    public long insertChamp(Integer id, String libelle, String donnee) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_IDCHAMPS, id);
+        values.put(KEY_LIBELLE, libelle);
+        values.put(KEY_DONNEE, donnee);
+        return db.insert(DBAdapter.TABLE_CHAMPS, null, values);
+    }
+
+    public Cursor getChamp(String id) {
+        return db.query(DBAdapter.TABLE_CHAMPS, null, DBAdapter.KEY_IDCHAMPS + "=?", new String[]{id}, null, null, null);
+    }
+
+    public int updateChamp(Integer id, String libelle, String donnee) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_IDCHAMPS, id);
+        values.put(KEY_LIBELLE, libelle);
+        values.put(KEY_DONNEE, donnee);
+        return db.update(TABLE_CHAMPS, values, KEY_IDCHAMPS + "=?", new String[]{String.valueOf(id)});
+    }
+
+    public int deleteChamp(int id) {
+        return db.delete(TABLE_CHAMPS, KEY_IDCHAMPS + "=?", new String[]{String.valueOf(id)});
     }
 }
