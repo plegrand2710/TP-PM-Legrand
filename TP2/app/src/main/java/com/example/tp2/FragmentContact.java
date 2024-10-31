@@ -368,16 +368,13 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
-        activity.get_annuaire().supprimer(activity.obtenirPositionActuelle(), view.getContext(), "fichier1.txt");
-        activity.initialiseFragments();
+        activity.supprimerContact(activity.obtenirPositionActuelle());
     }
 
 
     public void ajouter(View v) {
         FragmentContactNouveau fragmentNouveau = new FragmentContactNouveau();
-        ArrayList<Fragment> fragmentsNew = activity.get_fragments();
-        fragmentsNew.add(fragmentNouveau);
-        activity.setupViewPager(activity.get_viewPager(), fragmentsNew);
+        activity.ajouterContact(fragmentNouveau);
         activity.obtenirFragmentContact(activity.get_fragments().size()-1);
     }
 
