@@ -1,10 +1,13 @@
 package com.example.tp2;
 
 import java.util.ArrayList;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.util.Log;
 
 public class Contact {
 
-    // attributs d'instance
     private int numC = 0;
     private String nom ;
     private String prenom ;
@@ -17,8 +20,8 @@ public class Contact {
     private int miniature ;
     private ArrayList<String> libelleC = new ArrayList<String>();
     private ArrayList<String> donneeC = new ArrayList<String>();
+    String TAG = "annuaire";
 
-    // accès attributs d'instance
     public int get_numC() { return this.numC ; }
     public void set_numC(int i) { this.numC = i ; }
     public String get_nom()	{ return this.nom ; }
@@ -70,33 +73,50 @@ public class Contact {
         set_donneeC(new ArrayList<>());
         set_libelleC(new ArrayList<>());
     }
-    Contact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, int miniature){
-        set_nom(nom);
-        set_prenom(prenom);
-        set_tel(tel);
-        set_adresse(adresse);
-        set_cp(cp);
-        set_email(email);
-        set_metier(metier);
-        set_situation(situation);
-        set_miniature(miniature);
-        set_donneeC(new ArrayList<>());
-        set_libelleC(new ArrayList<>());
 
+    public ContentValues toContentValues() {
+        ContentValues values = new ContentValues();
+        values.put(DBAdapter.KEY_NOM, this.nom);
+        values.put(DBAdapter.KEY_PRENOM, this.prenom);
+        values.put(DBAdapter.KEY_TEL, this.tel);
+        values.put(DBAdapter.KEY_ADRESSE, this.adresse);
+        values.put(DBAdapter.KEY_CP, this.cp);
+        values.put(DBAdapter.KEY_EMAIL, this.email);
+        values.put(DBAdapter.KEY_METIER, this.metier);
+        values.put(DBAdapter.KEY_SITUATION, this.situation);
+        values.put(DBAdapter.KEY_MINIATURE, this.miniature);
+        return values;
     }
-    Contact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, int miniature, ArrayList<String> libelle, ArrayList<String> donnee){
-        set_nom(nom);
-        set_prenom(prenom);
-        set_tel(tel);
-        set_adresse(adresse);
-        set_cp(cp);
-        set_email(email);
-        set_metier(metier);
-        set_situation(situation);
-        set_miniature(miniature);
-        set_libelleC(libelle);
-        set_donneeC(donnee);
 
+    public Contact(Cursor cursor) {
+        Log.d(TAG, "Contact: création d'un contact");
+        Log.d(TAG, "Contact: récupération du nom...");
+        int i = cursor.getColumnIndex(DBAdapter.KEY_NOM);
+        Log.d(TAG, "Contact: ...réussi donc affectation au nom...");
+        this.nom = cursor.getString(i);
+        Log.d(TAG, "Contact: ...réussi");
+        int j = cursor.getColumnIndex(DBAdapter.KEY_PRENOM);
+        this.prenom = cursor.getString(j);
+        int k = cursor.getColumnIndex(DBAdapter.KEY_TEL);
+        this.tel = cursor.getString(k);
+        int l = cursor.getColumnIndex(DBAdapter.KEY_ADRESSE);
+        this.adresse = cursor.getString(l);
+        int m = cursor.getColumnIndex(DBAdapter.KEY_CP);
+        this.cp = cursor.getString(m);
+        int n = cursor.getColumnIndex(DBAdapter.KEY_EMAIL);
+        this.email = cursor.getString(n);
+        int o = cursor.getColumnIndex(DBAdapter.KEY_METIER);
+        this.metier = cursor.getString(o);
+        int p = cursor.getColumnIndex(DBAdapter.KEY_SITUATION);
+        this.situation = cursor.getString(p);
+        Log.d(TAG, "Contact: parametre principaux récupéré");
+        int q = cursor.getColumnIndex(DBAdapter.KEY_MINIATURE);
+        Log.d(TAG, "Contact: récupération dans la base");
+        String c = cursor.getString(q);
+        Log.d(TAG, "Contact: récupération de c : " + c);
+
+        //this.miniature = Integer.parseInt(cursor.getString(q));
+        Log.d(TAG, "Contact: toutes les parametres récupéré");
     }
 
     public void ajouterChamp(String libelle, String donnee){

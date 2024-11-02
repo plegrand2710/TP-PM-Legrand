@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,9 @@ public class FragmentContact extends Fragment {
     ArrayList<Integer> idEditText = null;
     private Contact c;
     ScrollableTabsActivity activity ;
+    DBAdapter bd;
 
+    String TAG = "annuaire";
     public FragmentContact(Contact c1) {
         c = c1;
     }
@@ -50,8 +53,17 @@ public class FragmentContact extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "onCreate: je suis fragment contact");
+        bd = new DBAdapter(getContext());
+        bd.open();
+        bd.loadBD();
+        bd.getChampsAddContact(1);
+        bd.close();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -122,6 +134,7 @@ public class FragmentContact extends Fragment {
             }
         }
         setUpButtonListeners();
+
         return view;
     }
 
@@ -210,7 +223,6 @@ public class FragmentContact extends Fragment {
         view.findViewById(R.id.bouttonSauvegarder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sauvegarder(v);
             }
         });
 
@@ -368,7 +380,7 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
-        activity.get_annuaire().supprimer(activity.obtenirPositionActuelle(), view.getContext(), "fichier1.txt");
+        activity.get_annuaire().supprimer(activity.obtenirPositionActuelle());
         activity.initialiseFragments();
     }
 
@@ -381,36 +393,6 @@ public class FragmentContact extends Fragment {
         activity.obtenirFragmentContact(activity.get_fragments().size()-1);
     }
 
-
-
-    public void sauvegarder(View v){
-        activity.get_annuaire().sauvegarder(view.getContext(), "fichier1.txt");
-        String nom = eNom.getText().toString();
-        String prenom = ePrenom.getText().toString();
-        String tel = eTel.getText().toString();
-        String adresse = eAdresse.getText().toString();
-        String cp = eCp.getText().toString();
-        String email = eEmail.getText().toString();
-        String metier = eMetier.getText().toString();
-        String situation = eSituation.getText().toString();
-        for(int i = 0 ; i < idTextView.size() && i < idEditText.size() ; i++){
-            TextView tempT = (TextView) view.findViewById(idTextView.get(i));
-            EditText tempE = (EditText) view.findViewById(idEditText.get(i));
-            libelleChamp.add(tempT.getText().toString());
-            donneeChamp.add(tempE.getText().toString());
-        }
-        int miniature = nImage;
-        Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleChamp, donneeChamp);
-        creer.set_numC(activity.get_annuaire().get_num());
-        activity.get_annuaire().ajout(creer);
-        FragmentContact fc = new FragmentContact(creer);
-        activity.get_annuaire().ecritureContact(view.getContext(), "fichier1.txt", creer);
-        activity.get_fragments().add(fc);
-
-        activity.resetViewPager();
-
-        Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
-    }
 
 
     public void image(int i){

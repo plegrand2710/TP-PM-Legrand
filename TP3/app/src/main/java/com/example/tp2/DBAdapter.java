@@ -8,6 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+
 public class DBAdapter {
 
     static final String TABLE_CONTACTS = "contacts";
@@ -20,6 +25,7 @@ public class DBAdapter {
     static final String KEY_EMAIL = "email";
     static final String KEY_METIER = "metier";
     static final String KEY_SITUATION = "situation";
+    static final String KEY_MINIATURE = "miniature";
     static final String CREATE_TABLE_CONTACTS =
             "CREATE TABLE " + TABLE_CONTACTS + " (" +
                     KEY_NUMERO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -30,7 +36,8 @@ public class DBAdapter {
                     KEY_CP + " NUMBER(5,0) NOT NULL, " +
                     KEY_EMAIL + " TEXT NOT NULL, " +
                     KEY_METIER + " TEXT NOT NULL, " +
-                    KEY_SITUATION + " TEXT NOT NULL);";
+                    KEY_SITUATION + " TEXT NOT NULL, " +
+                    KEY_MINIATURE + " INTEGER NOT NULL);";
 
 
     static final String TABLE_CHAMPS = "champs";
@@ -53,7 +60,7 @@ public class DBAdapter {
                     KEY_NUMCONTACT + " INTEGER NOT NULL, " +
                     KEY_IDCHAMP + " INTEGER NOT NULL );";
 
-    static final String TAG = "DBAdapter";
+    static final String TAG = "annuaire";
     static final String DATABASE_NAME = "CarnetContactDB";
     static final int DATABASE_VERSION = 1;
     final Context context;
@@ -72,6 +79,7 @@ public class DBAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+            Log.d(TAG, "onCreate: création de la base de donnée");
             try {
                 db.execSQL(CREATE_TABLE_CONTACTS);
                 db.execSQL(CREATE_TABLE_CHAMPS);
@@ -102,7 +110,30 @@ public class DBAdapter {
     }
 
 
-    public long insertContact(Integer num, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation) {
+    public List<String> getTableColumns(String tableName) {
+        List<String> columns = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            // Exécuter la commande PRAGMA pour obtenir les informations sur les colonnes
+            cursor = db.rawQuery("PRAGMA table_info(" + tableName + ");", null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex("name");
+                do {
+                    String columnName = cursor.getString(nameIndex);
+                    columns.add(columnName);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return columns;
+    }
+
+
+    public long insertContact(Integer num, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, String miniature) {
         ContentValues values = new ContentValues();
         values.put(KEY_NUMERO, num);
         values.put(KEY_NOM, nom);
@@ -113,14 +144,24 @@ public class DBAdapter {
         values.put(KEY_EMAIL, email);
         values.put(KEY_METIER, metier);
         values.put(KEY_SITUATION, situation);
+        values.put(KEY_MINIATURE, miniature);
         return db.insert(DBAdapter.TABLE_CONTACTS, null, values);
+    }
+
+    public long insertContact(Contact contact) {
+        ContentValues values = contact.toContentValues();
+        return db.insert(TABLE_CONTACTS, null, values);
     }
 
     public Cursor getContact(String num) {
         return db.query(DBAdapter.TABLE_CONTACTS, null, DBAdapter.KEY_NUMERO + "=?", new String[]{num}, null, null, null);
     }
 
-    public int updateContact(Integer numAct, Integer numNv, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation) {
+    public Cursor getAllContacts() {
+        return db.query(TABLE_CONTACTS, null, null, null, null, null, null);
+    }
+
+    public int updateContact(Integer numAct, Integer numNv, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, String miniature) {
         ContentValues values = new ContentValues();
         values.put(KEY_NUMERO, numNv);
         values.put(KEY_NOM, nom);
@@ -131,6 +172,7 @@ public class DBAdapter {
         values.put(KEY_EMAIL, email);
         values.put(KEY_METIER, metier);
         values.put(KEY_SITUATION, situation);
+        values.put(KEY_MINIATURE, miniature);
         return db.update(TABLE_CONTACTS, values, KEY_NUMERO + "=?", new String[]{String.valueOf(numAct)});
     }
 
@@ -162,7 +204,7 @@ public class DBAdapter {
         return db.delete(TABLE_CHAMPS, KEY_IDCHAMPS + "=?", new String[]{String.valueOf(id)});
     }
 
-    public long insertCc(Integer id, String numContact, String idChamp) {
+    public long insertCc(Integer id, Integer numContact, Integer idChamp) {
         ContentValues values = new ContentValues();
         values.put(KEY_IDTUPLE, id);
         values.put(KEY_NUMCONTACT, numContact);
@@ -185,4 +227,60 @@ public class DBAdapter {
     public int deleteCc(int id) {
         return db.delete(TABLE_CC, KEY_IDTUPLE + "=?", new String[]{String.valueOf(id)});
     }
+
+    public void loadBD() {
+        Log.d(TAG, "loadBD: chargement du contact");
+        long id = insertContact(0, "Legrand", "pauline", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "3");
+        id = insertContact(1, "grandle", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
+        /*id = insertChamp(0, "hebergement", "appart");
+        id = insertChamp(1, "email2", "gfgnfgf@ndlkhnf.com");
+        id = insertChamp(2, "nom2", "comme");
+        id = insertCc(0, 1, 1);
+        id = insertCc(1, 1, 2);
+        id = insertCc(2, 0, 0);*/
+
+    }
+
+    public Dictionary getChampsAddContact(int numContact) {
+        Dictionary champsContact = new Hashtable();
+
+
+    Cursor c = db.query(TABLE_CC,
+                new String[]{KEY_IDCHAMP},
+                KEY_NUMCONTACT + "=?",
+                new String[]{String.valueOf(numContact)},
+                null, null, null);
+
+        Log.d("Additionel", "récupère les ids pour le contact concerné");
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                int idChamp = c.getInt(0);
+
+                Log.d("Additionel", "requete sur le tuple : " + idChamp);
+                Cursor champCursor = db.query(TABLE_CHAMPS,
+                        new String[]{KEY_LIBELLE, KEY_DONNEE},
+                        KEY_IDCHAMPS + "=?",
+                        new String[]{String.valueOf(idChamp)},
+                        null, null, null);
+
+
+                Log.d("Additionel", "récupération des données");
+                if (champCursor != null && champCursor.moveToFirst()) {
+                    String libelle = champCursor.getString(0);
+                    String donnee = champCursor.getString(1);
+                    champsContact.put(libelle, donnee);
+
+                    Log.d("Additionel", "Libellé: " + libelle + " | Donnée: " + donnee);
+
+                    champCursor.close();
+                }
+            } while (c.moveToNext());
+            c.close();
+        }
+
+        Log.d("Additionel", "getChampsAddContact: champsContact = " + champsContact);
+        return champsContact;
+    }
+
 }

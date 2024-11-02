@@ -1,15 +1,16 @@
 package com.example.tp2;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
+
+import android.database.Cursor;
 
 
 @SuppressWarnings("serial")
@@ -19,41 +20,67 @@ public class Annuaire {
     //attribut instances
     private int num = 0 ;
     private int nbChampBase = 10;
-
+    private DBAdapter dbAdapter;
     private ArrayList<Contact> liste ;
 
-    public ArrayList<Contact> get_liste(){ return this.liste ; }
-    public void set_liste(ArrayList<Contact> a){ this.liste = a ; }
+    public void set_liste(ArrayList<Contact> a){ 
+        this.liste = a ;
+    }
 
-
-    // accès attribut de classe
     public int get_num() { return num ; }
     public void set_num(int i) { num = i; }
     public void inc_num() { num++ ; }
     public void dec_num() { num-- ; }
 
-    // constructeur
-    Annuaire(){
-        set_liste(new ArrayList<Contact>()) ;
+    String TAG = "annuaire";
+
+
+    Annuaire(Context context) {
+        Log.d(TAG, "Annuaire: création de l'annuaire et ouverture de la base de donnée");
+        dbAdapter = new DBAdapter(context);
+        Log.d(TAG, "Annuaire: création de l'adaptateur");
+        dbAdapter.open();
+        Log.d(TAG, "Annuaire: ajout de 2 contacts");
+        dbAdapter.loadBD();
+        Log.d(TAG, "Annuaire: ouverture de la base de donnée");
+        set_liste(new ArrayList<Contact>());
+        Log.d(TAG, "Annuaire: chargement de la liste des contacts");
+        //dbAdapter.close();
     }
 
-    public void ajout(Contact c){
-        get_liste().add(c);
+    public ArrayList<Contact> get_liste() {
+        Log.d(TAG, "get_liste: vidé la liste existante...");
+        liste.clear();
+        Log.d(TAG, "get_liste: ...réussi donc création d'un curseur pour récupérer les contacts...");
+        Cursor cursor = dbAdapter.getAllContacts();
+        Log.d(TAG, "get_liste: ...curseur réussi");
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Log.d(TAG, "get_liste: création d'un contact...");
+                List<String> l = dbAdapter.getTableColumns(DBAdapter.TABLE_CONTACTS);
+                Log.d(TAG, "get_liste: liste d'attributs : " + l);
+                Contact contact = new Contact(cursor);
+                Log.d(TAG, "get_liste: réussi donc ajout à la liste...");
+                liste.add(contact);
+                Log.d(TAG, "get_liste: ...ajout réussi");
+            } while (cursor.moveToNext());
+        }
+        return liste;
+    }
+
+    public void ajout(Contact contact) {
+        dbAdapter.insertContact(contact);
         inc_num();
     }
 
-    public void supprimer(int i, Context c, String s){
-        if(i >= 0 && i < get_liste().size()){
-            get_liste().remove(i);
-            dec_num();
-            for(int j = 0 ; j < this.get_liste().size() ; j++){
-                this.get_liste().get(j).set_numC(j);
-            }
-            this.sauvegarder(c, s);
-        }
-
+    public void supprimer(int id) {
+        dbAdapter.deleteContact(id);
+        dec_num();
     }
 
+    public void close() {
+        dbAdapter.close();
+    }
 
 
     // permet d'ajouter 1 contact
@@ -87,54 +114,5 @@ public class Annuaire {
         }
     }
 
-    public void lectureContacts(Context c, String s) {
-        try {
-            FileInputStream fichier= c.openFileInput(s);
-            InputStreamReader inputStreamReader = new InputStreamReader(fichier);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String ligne;
-            get_liste().clear();
-            set_num(0);
-            Annuaire recreer = this;
-            while((ligne = bufferedReader.readLine()) != null){
-                String[] infos = ligne.split(" ; ");
-                if(infos.length >= nbChampBase){
-                    String num = infos[0].split(":")[1].trim();
-                    String nom = infos[1].split(":")[1].trim();
-                    String prenom = infos[2].split(":")[1].trim();
-                    String tel = infos[3].split(":")[1].trim();
-                    String adresse = infos[4].split(":")[1].trim();
-                    String cp = infos[5].split(":")[1].trim();
-                    String email = infos[6].split(":")[1].trim();
-                    String metier = infos[7].split(":")[1].trim();
-                    String situation = infos[8].split(":")[1].trim();
-                    int miniature = Integer.parseInt(infos[9].split(":")[1].trim());
-
-                    Contact temp = new Contact(nom, prenom, tel, adresse, cp, email, situation, metier, miniature);
-                    temp.set_numC(Integer.parseInt(num));
-
-                    if(infos.length > nbChampBase){
-                        for (int i = nbChampBase; i < infos.length; i++) {
-                            String[] autreLib = infos[i].split(":");
-                            if (autreLib.length == 2) {
-                                String libelle = autreLib[0].trim();
-                                String donnee = autreLib[1].trim();
-                                temp.ajouterChamp(libelle, donnee);
-                            }
-                        }
-
-                    }
-                    recreer.ajout(temp);
-                }
-            }
-            bufferedReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(c.getApplicationContext(), "Fichier introuvable", Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(c.getApplicationContext(), "Erreur de lecture du fichier", Toast.LENGTH_LONG).show();
-        }
-    }
 
 }

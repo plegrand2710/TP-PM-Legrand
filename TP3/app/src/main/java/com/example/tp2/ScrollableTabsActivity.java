@@ -1,6 +1,7 @@
 package com.example.tp2;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -13,17 +14,55 @@ import java.util.List;
 
 public class ScrollableTabsActivity extends AppCompatActivity {
 
-    Annuaire a1 ;
+    private Annuaire a1;
     private ViewPager viewPager;
     private ArrayList<Fragment> fragments = new ArrayList<>();
-    ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+    private ViewPagerAdapter adapter;
+    private final String TAG = "ScrollableTabsActivityLog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_scrollable_tabs);
 
-        initialiseFragments();
+        Log.d(TAG, "onCreate : Initialisation des composants.");
+        viewPager = findViewById(R.id.viewpager);
+        a1 = new Annuaire(this);
 
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+
+        loadContacts();
+    }
+
+    private void loadContacts() {
+        Log.d(TAG, "loadContacts : Chargement des contacts et création des fragments.");
+        fragments.clear();
+
+        ArrayList<Contact> contacts = a1.get_liste();
+        for (Contact contact : contacts) {
+            fragments.add(new FragmentContact(contact));
+        }
+
+        if (fragments.isEmpty()) {
+            fragments.add(new FragmentContactNouveau());
+        }
+        refreshViewPager();
+    }
+
+
+    public void ajouterContact(Contact contact) {
+        a1.ajout(contact);
+        refreshViewPager();
+    }
+
+    public void supprimerContact(int id) {
+        a1.supprimer(id);
+        refreshViewPager();
+    }
+
+    private void refreshViewPager() {
+        adapter.refreshFragments(fragments);
     }
 
     public void initialiseFragments() {
@@ -32,8 +71,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         adapter.clearFragments();
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         fragments = new ArrayList<>();
-        a1 = new Annuaire();
-        a1.lectureContacts(this, "fichier1.txt");
+        a1 = new Annuaire(this);
         if (a1.get_num() > 0) {
             for (int i = 0; i < a1.get_num(); i++) {
                 Contact contact = a1.get_liste().get(i);
@@ -52,33 +90,15 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
     public void setupViewPager(ViewPager viewPager) {
         adapter.clearFragments();
-        for(int i = 0 ; i<fragments.size(); i++){
-            adapter.addFrag(fragments.get(i), "");
+        for (Fragment fragment : fragments) {
+            adapter.addFrag(fragment, "");
         }
         adapter.notifyDataSetChanged();
 
-        viewPager.setAdapter(adapter);
+        adapter.refreshFragments(fragments);
     }
 
-    public void resetViewPager() {
-        fragments.clear();
-        adapter.clearFragments();
 
-        if (a1.get_num() > 0) {
-            for (int i = 0; i < a1.get_num(); i++) {
-                Contact contact = a1.get_liste().get(i);
-                FragmentContact fragmentContact = new FragmentContact(contact);
-                fragments.add(fragmentContact);
-            }
-        }
-        else {
-            FragmentContact fr = new FragmentContactNouveau();
-            fragments.add(fr);
-        }
-        adapter.notifyDataSetChanged();
-
-        initialiseFragments();
-    }
 
     public Annuaire get_annuaire(){
         return a1;
@@ -155,6 +175,13 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         @Override
         public int getItemPosition(Object object) {
             return POSITION_NONE;
+        }
+
+        public void refreshFragments(List<Fragment> newFragmentList) {
+            Log.d(TAG, "refreshFragments : Mise à jour des fragments.");
+            mFragmentList.clear();
+            mFragmentList.addAll(newFragmentList);
+            notifyDataSetChanged();
         }
 
     }
