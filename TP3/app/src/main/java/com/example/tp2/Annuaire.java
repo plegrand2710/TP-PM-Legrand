@@ -17,7 +17,7 @@ import android.database.Cursor;
 
 public class Annuaire {
 
-    //attribut instances
+
     private int num = 0 ;
     private int nbChampBase = 10;
     private DBAdapter dbAdapter;
@@ -36,33 +36,21 @@ public class Annuaire {
 
 
     Annuaire(Context context) {
-        Log.d(TAG, "Annuaire: création de l'annuaire et ouverture de la base de donnée");
         dbAdapter = new DBAdapter(context);
-        Log.d(TAG, "Annuaire: création de l'adaptateur");
         dbAdapter.open();
-        Log.d(TAG, "Annuaire: ajout de 2 contacts");
         dbAdapter.loadBD();
-        Log.d(TAG, "Annuaire: ouverture de la base de donnée");
         set_liste(new ArrayList<Contact>());
-        Log.d(TAG, "Annuaire: chargement de la liste des contacts");
-        //dbAdapter.close();
     }
 
     public ArrayList<Contact> get_liste() {
-        Log.d(TAG, "get_liste: vidé la liste existante...");
         liste.clear();
-        Log.d(TAG, "get_liste: ...réussi donc création d'un curseur pour récupérer les contacts...");
         Cursor cursor = dbAdapter.getAllContacts();
-        Log.d(TAG, "get_liste: ...curseur réussi");
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                Log.d(TAG, "get_liste: création d'un contact...");
-                List<String> l = dbAdapter.getTableColumns(DBAdapter.TABLE_CONTACTS);
-                Log.d(TAG, "get_liste: liste d'attributs : " + l);
-                Contact contact = new Contact(cursor);
-                Log.d(TAG, "get_liste: réussi donc ajout à la liste...");
+                int x = cursor.getColumnIndex(DBAdapter.KEY_NUMERO);
+                int numero = cursor.getInt(x);
+                Contact contact = new Contact(cursor, dbAdapter.getChampsAddContact(numero));
                 liste.add(contact);
-                Log.d(TAG, "get_liste: ...ajout réussi");
             } while (cursor.moveToNext());
         }
         return liste;
@@ -82,8 +70,6 @@ public class Annuaire {
         dbAdapter.close();
     }
 
-
-    // permet d'ajouter 1 contact
     public void ecritureContact(Context c, String s, Contact ctt) {
         try {
             FileOutputStream fichier = c.openFileOutput(s, Context.MODE_APPEND);

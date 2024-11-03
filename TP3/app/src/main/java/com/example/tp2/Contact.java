@@ -1,6 +1,9 @@
 package com.example.tp2;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,9 +21,8 @@ public class Contact {
     private String metier ;
     private String situation ;
     private int miniature ;
-    private ArrayList<String> libelleC = new ArrayList<String>();
-    private ArrayList<String> donneeC = new ArrayList<String>();
-    String TAG = "annuaire";
+    private Dictionary libelleDonne;
+    String TAG = "TP3";
 
     public int get_numC() { return this.numC ; }
     public void set_numC(int i) { this.numC = i ; }
@@ -42,21 +44,14 @@ public class Contact {
     public void set_situation(String s)	{ this.situation = s ; }
     public int get_miniature()	{ return this.miniature ; }
     public void set_miniature(int i) { this.miniature = i ; }
-    public ArrayList<String> get_libelleC() {
-        return this.libelleC != null ? this.libelleC : new ArrayList<>();  // Vérification que la liste n'est pas nulle
+    public Dictionary get_libelleDonnee() {
+        return (Hashtable) this.libelleDonne != null ? this.libelleDonne : new Hashtable();
     }
 
-    public void set_libelleC(ArrayList<String> a) {
-        this.libelleC = a != null ? a : new ArrayList<>();  // Initialisation si null
+    public void set_libelleDonne(Dictionary d) {
+        this.libelleDonne = d != null ? d : new Hashtable();
     }
 
-    public ArrayList<String> get_donneeC() {
-        return this.donneeC != null ? this.donneeC : new ArrayList<>();  // Vérification que la liste n'est pas nulle
-    }
-
-    public void set_donneeC(ArrayList<String> a) {
-        this.donneeC = a != null ? a : new ArrayList<>();  // Initialisation si null
-    }
 
 
     // constructeurs
@@ -70,8 +65,7 @@ public class Contact {
         set_metier("");
         set_situation("");
         set_miniature(1);
-        set_donneeC(new ArrayList<>());
-        set_libelleC(new ArrayList<>());
+        set_libelleDonne(new Hashtable());
     }
 
     public ContentValues toContentValues() {
@@ -88,13 +82,9 @@ public class Contact {
         return values;
     }
 
-    public Contact(Cursor cursor) {
-        Log.d(TAG, "Contact: création d'un contact");
-        Log.d(TAG, "Contact: récupération du nom...");
+    public Contact(Cursor cursor, Dictionary dic) {
         int i = cursor.getColumnIndex(DBAdapter.KEY_NOM);
-        Log.d(TAG, "Contact: ...réussi donc affectation au nom...");
         this.nom = cursor.getString(i);
-        Log.d(TAG, "Contact: ...réussi");
         int j = cursor.getColumnIndex(DBAdapter.KEY_PRENOM);
         this.prenom = cursor.getString(j);
         int k = cursor.getColumnIndex(DBAdapter.KEY_TEL);
@@ -109,27 +99,34 @@ public class Contact {
         this.metier = cursor.getString(o);
         int p = cursor.getColumnIndex(DBAdapter.KEY_SITUATION);
         this.situation = cursor.getString(p);
-        Log.d(TAG, "Contact: parametre principaux récupéré");
         int q = cursor.getColumnIndex(DBAdapter.KEY_MINIATURE);
-        Log.d(TAG, "Contact: récupération dans la base");
-        String c = cursor.getString(q);
-        Log.d(TAG, "Contact: récupération de c : " + c);
+        this.miniature = Integer.parseInt(cursor.getString(q));
+        this.libelleDonne = dic ;
 
-        //this.miniature = Integer.parseInt(cursor.getString(q));
-        Log.d(TAG, "Contact: toutes les parametres récupéré");
+        Log.d(TAG, "Contact: nom = " + this.nom + " champ sup = " + this.libelleDonne);
+    }
+
+    Contact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, int miniature, Dictionary libelleDonne){
+        set_nom(nom);
+        set_prenom(prenom);
+        set_tel(tel);
+        set_adresse(adresse);
+        set_cp(cp);
+        set_email(email);
+        set_metier(metier);
+        set_situation(situation);
+        set_miniature(miniature);
+        set_libelleDonne(libelleDonne);
+
     }
 
     public void ajouterChamp(String libelle, String donnee){
-        get_libelleC().add(libelle);
-        get_donneeC().add(donnee);
+        libelleDonne.put(libelle, donnee);
     }
 
 
     public String toString() {
-        StringBuilder chaine = new StringBuilder("num : " + get_numC() + " ; nom : " + nom + " ; prenom : " + prenom + " ; tel : " + tel + " ; adresse : " + adresse + " ; cp : " + cp + " ; email : " + email + " ; metier : " + metier + " ; situation : " + situation + " ; miniature : " + miniature);
-        for(int i = 0; i < get_libelleC().size() && i < get_donneeC().size(); i++) {
-            chaine.append(" ; ").append(get_libelleC().get(i)).append(" : ").append(get_donneeC().get(i));
-        }
+        StringBuilder chaine = new StringBuilder("num : " + get_numC() + " ; nom : " + nom + " ; prenom : " + prenom + " ; tel : " + tel + " ; adresse : " + adresse + " ; cp : " + cp + " ; email : " + email + " ; metier : " + metier + " ; situation : " + situation + " ; miniature : " + miniature + libelleDonne);
         chaine.append("\n");
         return chaine.toString();
     }

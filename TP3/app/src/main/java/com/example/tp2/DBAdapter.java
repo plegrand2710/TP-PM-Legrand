@@ -79,7 +79,6 @@ public class DBAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            Log.d(TAG, "onCreate: création de la base de donnée");
             try {
                 db.execSQL(CREATE_TABLE_CONTACTS);
                 db.execSQL(CREATE_TABLE_CHAMPS);
@@ -114,7 +113,6 @@ public class DBAdapter {
         List<String> columns = new ArrayList<>();
         Cursor cursor = null;
         try {
-            // Exécuter la commande PRAGMA pour obtenir les informations sur les colonnes
             cursor = db.rawQuery("PRAGMA table_info(" + tableName + ");", null);
 
             if (cursor != null && cursor.moveToFirst()) {
@@ -229,15 +227,14 @@ public class DBAdapter {
     }
 
     public void loadBD() {
-        Log.d(TAG, "loadBD: chargement du contact");
         long id = insertContact(0, "Legrand", "pauline", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "3");
         id = insertContact(1, "grandle", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
-        /*id = insertChamp(0, "hebergement", "appart");
+        id = insertChamp(0, "hebergement", "appart");
         id = insertChamp(1, "email2", "gfgnfgf@ndlkhnf.com");
         id = insertChamp(2, "nom2", "comme");
         id = insertCc(0, 1, 1);
         id = insertCc(1, 1, 2);
-        id = insertCc(2, 0, 0);*/
+        id = insertCc(2, 0, 0);
 
     }
 

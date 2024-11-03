@@ -17,9 +17,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: je suis mainActivity");
         setContentView(R.layout.activity_main2);
-        Log.d(TAG, "onCreate: je charge le layout");
         startActivity(new Intent(MainActivity.this, ScrollableTabsActivity.class));
     }
 

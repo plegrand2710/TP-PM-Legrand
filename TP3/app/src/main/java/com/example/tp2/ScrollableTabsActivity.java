@@ -25,7 +25,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollable_tabs);
 
-        Log.d(TAG, "onCreate : Initialisation des composants.");
         viewPager = findViewById(R.id.viewpager);
         a1 = new Annuaire(this);
 
@@ -36,7 +35,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     }
 
     private void loadContacts() {
-        Log.d(TAG, "loadContacts : Chargement des contacts et création des fragments.");
         fragments.clear();
 
         ArrayList<Contact> contacts = a1.get_liste();
@@ -178,7 +176,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         }
 
         public void refreshFragments(List<Fragment> newFragmentList) {
-            Log.d(TAG, "refreshFragments : Mise à jour des fragments.");
             mFragmentList.clear();
             mFragmentList.addAll(newFragmentList);
             notifyDataSetChanged();

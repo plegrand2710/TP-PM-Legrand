@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 
 public class FragmentContact extends Fragment {
@@ -56,7 +57,6 @@ public class FragmentContact extends Fragment {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "onCreate: je suis fragment contact");
         bd = new DBAdapter(getContext());
         bd.open();
         bd.loadBD();
@@ -95,10 +95,10 @@ public class FragmentContact extends Fragment {
         eSituation.setText(c.get_situation().isEmpty() ? "non renseigné" : c.get_situation());
         image(c.get_miniature());
 
-        if(!c.get_libelleC().isEmpty() && !c.get_donneeC().isEmpty()){
-            for (int i = 0; i < c.get_libelleC().size(); i++) {
-                String libelle = c.get_libelleC().get(i);
-                String donnee = c.get_donneeC().get(i);
+        if (c.get_libelleDonnee() != null && !c.get_libelleDonnee().isEmpty()) {
+            for (Enumeration<String> keys = c.get_libelleDonnee().keys(); keys.hasMoreElements();) {
+                String libelle = keys.nextElement();
+                String donnee = c.get_libelleDonnee().get(libelle).toString();
 
                 if (!libelle.isEmpty() && !donnee.isEmpty()) {
                     TableLayout tl = view.findViewById(R.id.tableauChamp);

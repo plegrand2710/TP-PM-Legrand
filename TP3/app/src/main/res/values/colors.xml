@@ -2,5 +2,5 @@
 <resources>
     <color name="black">#FFFFFFFF</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="textview">#FAFAFA</color>
+    <color name="textview">#A4A3A3</color>
 </resources>
