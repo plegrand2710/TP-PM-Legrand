@@ -32,7 +32,7 @@ public class Annuaire {
     public void inc_num() { num++ ; }
     public void dec_num() { num-- ; }
 
-    String TAG = "annuaire";
+    String TAG = "TP3";
 
 
     Annuaire(Context context) {
@@ -51,13 +51,15 @@ public class Annuaire {
                 int numero = cursor.getInt(x);
                 Contact contact = new Contact(cursor, dbAdapter.getChampsAddContact(numero));
                 liste.add(contact);
+                inc_num();
             } while (cursor.moveToNext());
         }
         return liste;
     }
 
     public void ajout(Contact contact) {
-        dbAdapter.insertContact(contact);
+        long nb = dbAdapter.insertContact(contact);
+        contact.set_numC((int) nb);
         inc_num();
     }
 

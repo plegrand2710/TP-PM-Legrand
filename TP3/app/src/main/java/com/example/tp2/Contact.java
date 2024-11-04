@@ -102,8 +102,6 @@ public class Contact {
         int q = cursor.getColumnIndex(DBAdapter.KEY_MINIATURE);
         this.miniature = Integer.parseInt(cursor.getString(q));
         this.libelleDonne = dic ;
-
-        Log.d(TAG, "Contact: nom = " + this.nom + " champ sup = " + this.libelleDonne);
     }
 
     Contact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, int miniature, Dictionary libelleDonne){

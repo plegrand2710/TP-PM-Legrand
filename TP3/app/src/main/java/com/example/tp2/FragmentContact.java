@@ -18,7 +18,9 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 
 public class FragmentContact extends Fragment {
@@ -35,15 +37,14 @@ public class FragmentContact extends Fragment {
     ImageView fminiature ;
     int nImage = 1 ;
     View view ;
-    ArrayList<String> libelleChamp = null;
-    ArrayList<String> donneeChamp = null;
+    Dictionary libelleDonnee;
     ArrayList<Integer> idTextView = null;
     ArrayList<Integer> idEditText = null;
     private Contact c;
     ScrollableTabsActivity activity ;
     DBAdapter bd;
 
-    String TAG = "annuaire";
+    String TAG = "TP3";
     public FragmentContact(Contact c1) {
         c = c1;
     }
@@ -59,7 +60,6 @@ public class FragmentContact extends Fragment {
 
         bd = new DBAdapter(getContext());
         bd.open();
-        bd.loadBD();
         bd.getChampsAddContact(1);
         bd.close();
     }
@@ -223,6 +223,7 @@ public class FragmentContact extends Fragment {
         view.findViewById(R.id.bouttonSauvegarder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sauvegarder(v);
             }
         });
 
@@ -236,8 +237,6 @@ public class FragmentContact extends Fragment {
     }
 
     public void cAjouterChamp(View v) {
-        libelleChamp = new ArrayList<>();
-        donneeChamp = new ArrayList<>();
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
         AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
@@ -380,8 +379,8 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
-        activity.get_annuaire().supprimer(activity.obtenirPositionActuelle());
-        activity.initialiseFragments();
+        /*activity.get_annuaire().supprimer(activity.obtenirPositionActuelle());
+        activity.initialiseFragments();*/
     }
 
 
@@ -393,6 +392,28 @@ public class FragmentContact extends Fragment {
         activity.obtenirFragmentContact(activity.get_fragments().size()-1);
     }
 
+    public void sauvegarder(View v) {
+        libelleDonnee = new Hashtable();
+        String nom = eNom.getText().toString();
+        String prenom = ePrenom.getText().toString();
+        String tel = eTel.getText().toString();
+        String adresse = eAdresse.getText().toString();
+        String cp = eCp.getText().toString();
+        String email = eEmail.getText().toString();
+        String metier = eMetier.getText().toString();
+        String situation = eSituation.getText().toString();
+        for(int i = 0 ; i < idTextView.size() && i < idEditText.size() ; i++){
+            TextView tempT = (TextView) view.findViewById(idTextView.get(i));
+            EditText tempE = (EditText) view.findViewById(idEditText.get(i));
+            libelleDonnee.put(tempT.getText().toString(), tempE.getText().toString());
+        }
+        int miniature = nImage;
+        Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleDonnee);
+        Log.d(TAG, "sauvegarder: j'ai créer le contact" + creer);
+        activity.ajouterContact(creer);
+        Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
+        bd.close();
+    }
 
 
     public void image(int i){

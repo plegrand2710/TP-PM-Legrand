@@ -60,7 +60,7 @@ public class DBAdapter {
                     KEY_NUMCONTACT + " INTEGER NOT NULL, " +
                     KEY_IDCHAMP + " INTEGER NOT NULL );";
 
-    static final String TAG = "annuaire";
+    static final String TAG = "TP3";
     static final String DATABASE_NAME = "CarnetContactDB";
     static final int DATABASE_VERSION = 1;
     final Context context;
@@ -131,9 +131,8 @@ public class DBAdapter {
     }
 
 
-    public long insertContact(Integer num, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, String miniature) {
+    public long insertContact(String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, String miniature) {
         ContentValues values = new ContentValues();
-        values.put(KEY_NUMERO, num);
         values.put(KEY_NOM, nom);
         values.put(KEY_PRENOM, prenom);
         values.put(KEY_TEL, tel);
@@ -147,8 +146,10 @@ public class DBAdapter {
     }
 
     public long insertContact(Contact contact) {
+        //return insertContact(contact.get_nom(), contact.get_prenom(), contact.get_tel(), contact.get_adresse(), contact.get_cp(), contact.get_email(), contact.get_metier(), contact.get_situation(), String.valueOf(contact.get_miniature()));
         ContentValues values = contact.toContentValues();
-        return db.insert(TABLE_CONTACTS, null, values);
+        Log.d(TAG, "insertContact: j'ai récupéré les valeurs dans la base");
+        return db.insert(DBAdapter.TABLE_CONTACTS, null, values);
     }
 
     public Cursor getContact(String num) {
@@ -157,6 +158,13 @@ public class DBAdapter {
 
     public Cursor getAllContacts() {
         return db.query(TABLE_CONTACTS, null, null, null, null, null, null);
+    }
+
+    public Integer getDernierId() {
+        Log.d(TAG, "getDernierId: je suis ici");
+        Cursor cursor = db.query(TABLE_CONTACTS, new String[]{"MAX(" + DBAdapter.KEY_NUMERO + ")"}, null, null, null, null, null);
+        Log.d(TAG, "getDernierId: id = " + cursor.getInt(0));
+        return cursor.getInt(0);
     }
 
     public int updateContact(Integer numAct, Integer numNv, String nom, String prenom, String tel, String adresse, String cp, String email, String metier, String situation, String miniature) {
@@ -227,8 +235,8 @@ public class DBAdapter {
     }
 
     public void loadBD() {
-        long id = insertContact(0, "Legrand", "pauline", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "3");
-        id = insertContact(1, "grandle", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
+        long id = insertContact("Legrand", "pauline", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "3");
+        id = insertContact("grandle", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
         id = insertChamp(0, "hebergement", "appart");
         id = insertChamp(1, "email2", "gfgnfgf@ndlkhnf.com");
         id = insertChamp(2, "nom2", "comme");

@@ -18,7 +18,8 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private ArrayList<Fragment> fragments = new ArrayList<>();
     private ViewPagerAdapter adapter;
-    private final String TAG = "ScrollableTabsActivityLog";
+    private final String TAG = "TP3";
+    private DBAdapter bd ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.viewpager);
         a1 = new Annuaire(this);
+        bd = new DBAdapter(this);
 
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -50,8 +52,11 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
 
     public void ajouterContact(Contact contact) {
+        bd.open();
         a1.ajout(contact);
-        refreshViewPager();
+        FragmentContact fc = new FragmentContact(contact);
+        fragments.add(fc);
+        loadContacts();
     }
 
     public void supprimerContact(int id) {
@@ -96,7 +101,29 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         adapter.refreshFragments(fragments);
     }
 
+    public void reinitialiseFragments(){
+        fragments.clear();
+        Log.d(TAG, "reinitialiseFragments: reinitialisation de la liste de fragments");
+        adapter.clearFragments();
+        Log.d(TAG, "reinitialiseFragments: reinitialisation du viewpageradapter");
+        adapter.notifyDataSetChanged();
+        Log.d(TAG, "reinitialiseFragments: notification de changement");
+        if (a1.get_num() > 0) {
+            for (int i = 0; i < a1.get_num(); i++) {
+                Contact contact = a1.get_liste().get(i);
+                Log.d(TAG, "reinitialiseFragments: creation d'un contact");
+                FragmentContact fragmentContact = new FragmentContact(contact);
+                fragments.add(fragmentContact);
+                Log.d(TAG, "reinitialiseFragments: ajout au tableau de fragment");
+            }
+        }
+        Log.d(TAG, "reinitialiseFragments: fin de la lecture de l'annuaire");
+        
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
+
+    }
 
     public Annuaire get_annuaire(){
         return a1;
