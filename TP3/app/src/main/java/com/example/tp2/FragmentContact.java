@@ -379,8 +379,7 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
-        /*activity.get_annuaire().supprimer(activity.obtenirPositionActuelle());
-        activity.initialiseFragments();*/
+        activity.supprimerContact(activity.obtenirPositionActuelle()+1);
     }
 
 
@@ -412,7 +411,6 @@ public class FragmentContact extends Fragment {
         Log.d(TAG, "sauvegarder: j'ai créer le contact" + creer);
         activity.ajouterContact(creer);
         Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
-        bd.close();
     }
 
 

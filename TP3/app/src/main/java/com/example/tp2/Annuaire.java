@@ -64,7 +64,7 @@ public class Annuaire {
     }
 
     public void supprimer(int id) {
-        dbAdapter.deleteContact(id);
+        long nb = dbAdapter.deleteContact(id);
         dec_num();
     }
 

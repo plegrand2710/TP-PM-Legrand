@@ -38,7 +38,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
     private void loadContacts() {
         fragments.clear();
-
         ArrayList<Contact> contacts = a1.get_liste();
         for (Contact contact : contacts) {
             fragments.add(new FragmentContact(contact));
@@ -57,11 +56,20 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         FragmentContact fc = new FragmentContact(contact);
         fragments.add(fc);
         loadContacts();
+        bd.close();
     }
 
     public void supprimerContact(int id) {
+        bd.open();
         a1.supprimer(id);
-        refreshViewPager();
+        adapter.clearFragments();
+        adapter.notifyDataSetChanged();
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.notifyDataSetChanged();
+        loadContacts();
+        adapter.notifyDataSetChanged();
+        viewPager.setAdapter(adapter);
+        bd.close();
     }
 
     private void refreshViewPager() {
@@ -206,6 +214,12 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             mFragmentList.clear();
             mFragmentList.addAll(newFragmentList);
             notifyDataSetChanged();
+
+            Log.d(TAG, "refreshFragments: Contenu de l'adaptateur après rafraîchissement.");
+            for (int i = 0; i < mFragmentList.size(); i++) {
+                Fragment fragment = mFragmentList.get(i);
+                Log.d(TAG, "Fragment " + i);
+            }
         }
 
     }
