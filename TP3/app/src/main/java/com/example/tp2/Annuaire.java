@@ -38,7 +38,7 @@ public class Annuaire {
     Annuaire(Context context) {
         dbAdapter = new DBAdapter(context);
         dbAdapter.open();
-        dbAdapter.loadBD();
+        //dbAdapter.loadBD();
         set_liste(new ArrayList<Contact>());
     }
 

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
@@ -176,12 +177,12 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     }
 
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
+            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override
@@ -197,11 +198,14 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         public void addFrag(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
+            Log.d(TAG, "addFrag: Ajouté fragment avec titre : " + title + ", Fragment : " + fragment);
+            notifyDataSetChanged();
         }
 
         public void clearFragments() {
             mFragmentList.clear();
             mFragmentTitleList.clear();
+            Log.d(TAG, "clearFragments: Tous les fragments supprimés.");
             notifyDataSetChanged();
         }
 
@@ -218,9 +222,8 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             Log.d(TAG, "refreshFragments: Contenu de l'adaptateur après rafraîchissement.");
             for (int i = 0; i < mFragmentList.size(); i++) {
                 Fragment fragment = mFragmentList.get(i);
-                Log.d(TAG, "Fragment " + i);
+                Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
             }
         }
-
     }
 }

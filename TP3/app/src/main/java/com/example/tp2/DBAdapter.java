@@ -240,6 +240,9 @@ public class DBAdapter {
         id = insertContact("d'acc", "anthone", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "4");
         id = insertContact("okay", "corinne", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "5");
         id = insertChamp(0, "hebergement", "appart");
+        id = insertContact("pourquoi", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
+        id = insertContact("choub", "anthone", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "4");
+        id = insertContact("create", "corinne", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "5");
         id = insertChamp(1, "email2", "gfgnfgf@ndlkhnf.com");
         id = insertChamp(2, "nom2", "comme");
         id = insertCc(0, 1, 1);
