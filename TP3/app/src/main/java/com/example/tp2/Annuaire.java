@@ -35,7 +35,7 @@ public class Annuaire {
     String TAG = "TP3";
 
 
-    Annuaire(Context context) {
+    public Annuaire(Context context) {
         dbAdapter = new DBAdapter(context);
         dbAdapter.open();
         //dbAdapter.loadBD();

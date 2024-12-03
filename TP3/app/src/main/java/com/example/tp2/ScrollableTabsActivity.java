@@ -2,6 +2,7 @@ package com.example.tp2;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -54,6 +55,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     public void ajouterContact(Contact contact) {
         bd.open();
         a1.ajout(contact);
+        //Toast.makeText(this,""+ contact, Toast.LENGTH_SHORT).show();
         FragmentContact fc = new FragmentContact(contact);
         fragments.add(fc);
         loadContacts();
@@ -127,7 +129,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             }
         }
         Log.d(TAG, "reinitialiseFragments: fin de la lecture de l'annuaire");
-        
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 

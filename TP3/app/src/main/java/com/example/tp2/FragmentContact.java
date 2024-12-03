@@ -1,7 +1,9 @@
 package com.example.tp2;
-
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -15,6 +17,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -22,9 +26,14 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import android.widget.ImageView;
 
 public class FragmentContact extends Fragment {
 
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     TextView tNum ;
     EditText eNom ;
     EditText ePrenom ;
@@ -138,6 +147,29 @@ public class FragmentContact extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            fminiature.setImageBitmap(imageBitmap);
+            nImage = -1;
+            Log.d(TAG, "Photo prise avec succès et affichée.");
+        } else {
+            Log.d(TAG, "Aucune photo prise ou erreur.");
+        }
+    }
+
+    private void demanderPermissionCamera() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.CAMERA},
+                    REQUEST_IMAGE_CAPTURE);
+        }
+    }
     private void setUpButtonListeners() {
         // Bouton "Moins"
         view.findViewById(R.id.bouttonAvant).setOnClickListener(new View.OnClickListener() {
@@ -234,6 +266,13 @@ public class FragmentContact extends Fragment {
                 cAjouterChamp(v);
             }
         });
+
+        view.findViewById(R.id.bPrendrePhoto).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ouvrirCamera();
+            }
+        });
     }
 
     public void cAjouterChamp(View v) {
@@ -295,6 +334,19 @@ public class FragmentContact extends Fragment {
         dialog.show();
     }
 
+    private void ouvrirCamera() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            demanderPermissionCamera();
+        } else {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            } else {
+                Toast.makeText(getContext(), "Impossible d'accéder à la caméra", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     public void bMoins(View v){
         if(nImage>=2){

@@ -146,7 +146,6 @@ public class DBAdapter {
     }
 
     public long insertContact(Contact contact) {
-        //return insertContact(contact.get_nom(), contact.get_prenom(), contact.get_tel(), contact.get_adresse(), contact.get_cp(), contact.get_email(), contact.get_metier(), contact.get_situation(), String.valueOf(contact.get_miniature()));
         ContentValues values = contact.toContentValues();
         Log.d(TAG, "insertContact: j'ai récupéré les valeurs dans la base");
         return db.insert(DBAdapter.TABLE_CONTACTS, null, values);
@@ -292,5 +291,39 @@ public class DBAdapter {
         Log.d("Additionel", "getChampsAddContact: champsContact = " + champsContact);
         return champsContact;
     }
+
+    public int getNbLigneTable(String tableName) {
+        int count = 0;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT COUNT(*) FROM " + tableName, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return count;
+    }
+    public int getNumLigne(String tableName, String whereClause) {
+        int rowNumber = -1;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(
+                    "SELECT ROWID FROM " + tableName + " WHERE " + whereClause, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                rowNumber = cursor.getInt(0);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return rowNumber;
+    }
+
 
 }

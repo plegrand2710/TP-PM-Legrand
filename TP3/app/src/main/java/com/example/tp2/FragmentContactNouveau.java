@@ -1,7 +1,9 @@
 package com.example.tp2;
 
+import android.database.Cursor;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,8 @@ public class FragmentContactNouveau extends FragmentContact{
     ArrayList<Integer> idTextView = null;
     ArrayList<Integer> idEditText = null;
 
+    DBAdapter dbAdapter;
+
     public FragmentContactNouveau() {
         super();
     }
@@ -52,20 +56,30 @@ public class FragmentContactNouveau extends FragmentContact{
         eMetier = (EditText) view.findViewById(R.id.editTextSMetier);
         eSituation = (EditText) view.findViewById(R.id.editTextSSituation);
         fminiature = (ImageView) view.findViewById(R.id.imageView);
+        Log.d(TAG, "onCreateView: création jusqu'ici 2 ok");
+
+        dbAdapter = new DBAdapter(getContext());
+        dbAdapter.open();
 
         activity = (ScrollableTabsActivity) getActivity();
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
+        Log.d(TAG, "onCreateView: création jusqu'ici 1 ok");
 
-        tNum.setText("" + (activity.get_annuaire().get_num()+1));
+        tNum.setText("" + ((dbAdapter.getNbLigneTable("contacts") + 1)));
+        Log.d(TAG, "onCreateView: création jusqu'ici BIHNJ ok");
         eNom.setHint("saisir");
+        Log.d(TAG, "onCreateView: création jusqu'ici 4ok");
         ePrenom.setHint("saisir");
         eTel.setHint("saisir");
+        Log.d(TAG, "onCreateView: création jusqu'ici 5 ok");
         eAdresse.setHint("saisir");
         eCp.setHint("saisir");
         eEmail.setHint("saisir");
+        Log.d(TAG, "onCreateView: création jusqu'ici 6 ok");
         eMetier.setHint("saisir");
         eSituation.setHint("saisir");
+        Log.d(TAG, "onCreateView: création jusqu'ici 3 ok");
         eNom.setText("");
         ePrenom.setText("");
         eTel.setText("");
@@ -74,7 +88,7 @@ public class FragmentContactNouveau extends FragmentContact{
         eMetier.setText("");
         eEmail.setText("");
         eSituation.setText("");
-
+        Log.d(TAG, "onCreateView: création jusqu'ici ok");
         fminiature.setImageResource(R.drawable.client1);
         nImage = 1;
 

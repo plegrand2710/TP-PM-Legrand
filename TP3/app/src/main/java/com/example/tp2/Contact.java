@@ -52,9 +52,6 @@ public class Contact {
         this.libelleDonne = d != null ? d : new Hashtable();
     }
 
-
-
-    // constructeurs
     Contact(){
         set_nom("");
         set_prenom("");
