@@ -23,6 +23,15 @@ public class Contact {
     private int miniature ;
     private Dictionary libelleDonne;
     String TAG = "TP3";
+    private String cheminImage;
+
+    public String getCheminImage() {
+        return cheminImage;
+    }
+
+    public void setCheminImage(String cheminImage) {
+        this.cheminImage = cheminImage;
+    }
 
     public int get_numC() { return this.numC ; }
     public void set_numC(int i) { this.numC = i ; }

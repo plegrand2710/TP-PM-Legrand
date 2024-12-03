@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,14 +21,21 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -52,6 +63,10 @@ public class FragmentContact extends Fragment {
     private Contact c;
     ScrollableTabsActivity activity ;
     DBAdapter bd;
+    private String currentPhotoPath;
+    private static final String JPEG_FILE_PREFIX = "IMG_";
+    private static final String JPEG_FILE_SUFFIX = ".jpg";
+    private String nImagePath; // Chemin de l'image
 
     String TAG = "TP3";
     public FragmentContact(Contact c1) {
@@ -75,6 +90,32 @@ public class FragmentContact extends Fragment {
 
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("nom", eNom.getText().toString());
+        outState.putString("prenom", ePrenom.getText().toString());
+        outState.putString("tel", eTel.getText().toString());
+        outState.putString("adresse", eAdresse.getText().toString());
+        outState.putString("cp", eCp.getText().toString());
+        outState.putString("email", eEmail.getText().toString());
+        outState.putString("metier", eMetier.getText().toString());
+        outState.putString("situation", eSituation.getText().toString());
+        outState.putInt("nImage", nImage);
+        outState.putString("imagePath", nImagePath);
+
+        if (libelleDonnee != null) {
+            Bundle libelleBundle = new Bundle();
+            for (Enumeration<String> keys = libelleDonnee.keys(); keys.hasMoreElements();) {
+                String key = keys.nextElement();
+                libelleBundle.putString(key, libelleDonnee.get(key).toString());
+            }
+            outState.putBundle("libelleDonnee", libelleBundle);
+        }
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.activity_main2, container, false);
@@ -89,6 +130,15 @@ public class FragmentContact extends Fragment {
         eSituation = (EditText) view.findViewById(R.id.editTextSSituation);
         fminiature = (ImageView) view.findViewById(R.id.imageView);
 
+        if (c.getCheminImage() != null) {
+            File imgFile = new File(c.getCheminImage());
+            if (imgFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                fminiature.setImageBitmap(bitmap);
+                nImagePath = c.getCheminImage();
+            }
+        }
+        
         activity = (ScrollableTabsActivity) getActivity();
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
@@ -103,6 +153,7 @@ public class FragmentContact extends Fragment {
         eMetier.setText(c.get_metier().isEmpty() ? "non renseigné" : c.get_metier());
         eSituation.setText(c.get_situation().isEmpty() ? "non renseigné" : c.get_situation());
         image(c.get_miniature());
+
 
         if (c.get_libelleDonnee() != null && !c.get_libelleDonnee().isEmpty()) {
             for (Enumeration<String> keys = c.get_libelleDonnee().keys(); keys.hasMoreElements();) {
@@ -142,10 +193,45 @@ public class FragmentContact extends Fragment {
                 }
             }
         }
+
+        if (savedInstanceState != null) {
+            eNom.setText(savedInstanceState.getString("nom", ""));
+            ePrenom.setText(savedInstanceState.getString("prenom", ""));
+            eTel.setText(savedInstanceState.getString("tel", ""));
+            eAdresse.setText(savedInstanceState.getString("adresse", ""));
+            eCp.setText(savedInstanceState.getString("cp", ""));
+            eEmail.setText(savedInstanceState.getString("email", ""));
+            eMetier.setText(savedInstanceState.getString("metier", ""));
+            eSituation.setText(savedInstanceState.getString("situation", ""));
+
+            nImagePath = savedInstanceState.getString("imagePath");
+            if (nImagePath != null) {
+                File imgFile = new File(nImagePath);
+                if (imgFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    fminiature.setImageBitmap(bitmap);
+                }
+            }
+            nImage
+                    = savedInstanceState.getInt("nImage", 1);
+            if (nImage > 0) {
+                image(nImage);
+            }
+
+            Bundle libelleBundle = savedInstanceState.getBundle("libelleDonnee");
+            if (libelleBundle != null) {
+                libelleDonnee = new Hashtable<>();
+                for (String key : libelleBundle.keySet()) {
+                    libelleDonnee.put(key, libelleBundle.getString(key));
+                }
+            }
+        }
+
         setUpButtonListeners();
 
         return view;
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -155,11 +241,15 @@ public class FragmentContact extends Fragment {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             fminiature.setImageBitmap(imageBitmap);
-            nImage = -1;
+            nImage = -1; // Indiquer que l'utilisateur a pris une photo au lieu de sélectionner une image prédéfinie
             Log.d(TAG, "Photo prise avec succès et affichée.");
         } else {
             Log.d(TAG, "Aucune photo prise ou erreur.");
         }
+    }
+
+    private String getAlbumName() {
+        return getString(R.string.album_name);
     }
 
     private void demanderPermissionCamera() {
@@ -460,11 +550,20 @@ public class FragmentContact extends Fragment {
         }
         int miniature = nImage;
         Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleDonnee);
+        creer.setCheminImage(nImagePath);
         Log.d(TAG, "sauvegarder: j'ai créer le contact" + creer);
         activity.ajouterContact(creer);
         Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
     }
 
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        getContext().sendBroadcast(mediaScanIntent);
+    }
 
     public void image(int i){
         switch (i) {
