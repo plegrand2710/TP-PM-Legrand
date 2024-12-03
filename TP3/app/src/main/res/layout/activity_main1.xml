@@ -75,18 +75,34 @@
                 app:layout_constraintStart_toEndOf="@+id/frameLayout"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/bajouterChamp"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/bajouterchamp"
-                android:textColor="#2196F3"
-                android:textColorHighlight="#FF9800"
-                android:textColorHint="#FAFAFA"
-                android:textColorLink="#EB4D42"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+                app:layout_constraintStart_toStartOf="parent">
+
+                <Button
+                    android:id="@+id/bajouterChamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/bajouterchamp"
+                    android:textColor="#2196F3"
+                    android:textColorHighlight="#FF9800"
+                    android:textColorHint="#FAFAFA"
+                    android:textColorLink="#EB4D42" />
+
+                <Button
+                    android:id="@+id/bPrendrePhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prendrePhoto"
+                    android:textColor="#2196F3"
+                    android:textColorHighlight="#FF9800"
+                    android:textColorHint="#FAFAFA"
+                    android:textColorLink="#EB4D42" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

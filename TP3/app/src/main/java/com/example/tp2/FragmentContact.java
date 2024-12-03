@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +119,16 @@ public class FragmentContact extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_main2, container, false);
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+
+        if (width > height) {
+            view = inflater.inflate(R.layout.activity_main1, container, false);
+        } else {
+            view = inflater.inflate(R.layout.activity_main2, container, false);
+        }
+
         tNum = (TextView) view.findViewById(R.id.textViewSNum);
         eNom = (EditText) view.findViewById(R.id.editTextSNom);
         ePrenom = (EditText) view.findViewById(R.id.editTextSPrenom);
