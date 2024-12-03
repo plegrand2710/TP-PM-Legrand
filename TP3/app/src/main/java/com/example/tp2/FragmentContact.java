@@ -89,7 +89,6 @@ public class FragmentContact extends Fragment {
         bd.close();
     }
 
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);

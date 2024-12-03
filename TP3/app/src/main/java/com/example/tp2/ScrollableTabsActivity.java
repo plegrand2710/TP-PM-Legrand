@@ -2,7 +2,12 @@ package com.example.tp2;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -28,6 +33,9 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollable_tabs);
 
+        Toolbar menubar = findViewById(R.id.toolbar);
+        setSupportActionBar(menubar);
+
         viewPager = findViewById(R.id.viewpager);
         a1 = new Annuaire(this);
         bd = new DBAdapter(this);
@@ -35,8 +43,32 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
-        loadContacts();
+        fragments = new ArrayList<>();
+        FragmentContact fr = new FragmentContactNouveau();
+        fragments.add(fr);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+        //loadContacts();
+
     }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu); // Charger le menu
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_preremplir) {
+            loadContacts();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void loadContacts() {
         fragments.clear();

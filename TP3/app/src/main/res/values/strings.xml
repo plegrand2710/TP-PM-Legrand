@@ -28,7 +28,7 @@
     <string name="invalide">Numéro invalide</string>
     <string name="prendrePhoto">prendre une photo</string>
     <string name="album_name">CameraSample</string>
-
+    <string name="preremplirContact">Préremplir les contacts</string>
     <string name="title_activity_scrollable_tabs">Scrollable Tabs</string>
 
 </resources>
