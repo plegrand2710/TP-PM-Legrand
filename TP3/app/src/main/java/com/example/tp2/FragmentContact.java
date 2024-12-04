@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Objects;
 
 
 import android.content.Intent;
@@ -66,14 +67,17 @@ public class FragmentContact extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 100;
     private String currentPhotoPath;
+    private String type;
 
     String TAG = "TP3";
     public FragmentContact(Contact c1) {
         c = c1;
+        type = "normal";
     }
 
     public FragmentContact(){
         c = new Contact();
+        type = "nouveau";
     }
 
     @Override
@@ -150,17 +154,40 @@ public class FragmentContact extends Fragment {
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
 
-        tNum.setText("" + (c.get_numC()+1));
-        eNom.setText(c.get_nom().isEmpty() ? "non renseigné" : c.get_nom());
-        ePrenom.setText(c.get_prenom().isEmpty() ? "non renseigné" : c.get_prenom());
-        eTel.setText(c.get_tel().isEmpty() ? "non renseigné" : c.get_tel());
-        eAdresse.setText(c.get_adresse().isEmpty() ? "non renseigné" : c.get_adresse());
-        eCp.setText(c.get_cp().isEmpty() ? "non renseigné" : c.get_cp());
-        eEmail.setText(c.get_email().isEmpty() ? "non renseigné" : c.get_email());
-        eMetier.setText(c.get_metier().isEmpty() ? "non renseigné" : c.get_metier());
-        eSituation.setText(c.get_situation().isEmpty() ? "non renseigné" : c.get_situation());
-        image(c.get_miniature());
-
+        if(Objects.equals(type, "normal")){
+            tNum.setText("" + (c.get_numC()+1));
+            eNom.setText(c.get_nom().isEmpty() ? "non renseigné" : c.get_nom());
+            ePrenom.setText(c.get_prenom().isEmpty() ? "non renseigné" : c.get_prenom());
+            eTel.setText(c.get_tel().isEmpty() ? "non renseigné" : c.get_tel());
+            eAdresse.setText(c.get_adresse().isEmpty() ? "non renseigné" : c.get_adresse());
+            eCp.setText(c.get_cp().isEmpty() ? "non renseigné" : c.get_cp());
+            eEmail.setText(c.get_email().isEmpty() ? "non renseigné" : c.get_email());
+            eMetier.setText(c.get_metier().isEmpty() ? "non renseigné" : c.get_metier());
+            eSituation.setText(c.get_situation().isEmpty() ? "non renseigné" : c.get_situation());
+            image(c.get_miniature());
+        } else if (Objects.equals(type, "nouveau")) {
+            bd = new DBAdapter(getContext());
+            bd.open();
+            tNum.setText("" + ((bd.getNbLigneTable("contacts") + 1)));
+            eNom.setHint("saisir");
+            ePrenom.setHint("saisir");
+            eTel.setHint("saisir");
+            eAdresse.setHint("saisir");
+            eCp.setHint("saisir");
+            eEmail.setHint("saisir");
+            eMetier.setHint("saisir");
+            eSituation.setHint("saisir");
+            Log.d(TAG, "onCreateView: j'ai fait hint");
+            eNom.setText("");
+            ePrenom.setText("");
+            eTel.setText("");
+            eAdresse.setText("");
+            eCp.setText("");
+            eMetier.setText("");
+            eEmail.setText("");
+            eSituation.setText("");
+            Log.d(TAG, "onCreateView: j'ai initialisé nouveau");
+        }
 
         if (c.get_libelleDonnee() != null && !c.get_libelleDonnee().isEmpty()) {
             for (Enumeration<String> keys = c.get_libelleDonnee().keys(); keys.hasMoreElements();) {
@@ -215,14 +242,23 @@ public class FragmentContact extends Fragment {
             if (currentPhotoPath != null) {
                 File imgFile = new File(currentPhotoPath);
                 if (imgFile.exists()) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    fminiature.setImageBitmap(bitmap);
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        Bitmap orientedBitmap = getOrientedBitmap(bitmap, imgFile.getAbsolutePath());
+                        fminiature.setImageBitmap(orientedBitmap);
+                    } catch (Exception e) {
+                        Log.e("CameraApp", "Erreur lors du traitement de l'image", e);
+                        Toast.makeText(getContext(), "Erreur lors de l'affichage de l'image", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
-            nImage = savedInstanceState.getInt("nImage", -1);
-            if (nImage > 0) {
-                image(nImage);
+            else{
+                nImage = savedInstanceState.getInt("nImage", -1);
+                if (nImage > 0) {
+                    image(nImage);
+                }
             }
+
 
             Bundle libelleBundle = savedInstanceState.getBundle("libelleDonnee");
             if (libelleBundle != null) {
@@ -475,7 +511,7 @@ public class FragmentContact extends Fragment {
                 matrix.postRotate(270);
                 break;
             default:
-                return bitmap; 
+                return bitmap;
         }
 
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);

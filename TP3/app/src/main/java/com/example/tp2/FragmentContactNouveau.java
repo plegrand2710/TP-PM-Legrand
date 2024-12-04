@@ -56,7 +56,6 @@ public class FragmentContactNouveau extends FragmentContact{
         eMetier = (EditText) view.findViewById(R.id.editTextSMetier);
         eSituation = (EditText) view.findViewById(R.id.editTextSSituation);
         fminiature = (ImageView) view.findViewById(R.id.imageView);
-        Log.d(TAG, "onCreateView: création jusqu'ici 2 ok");
 
         dbAdapter = new DBAdapter(getContext());
         dbAdapter.open();
@@ -64,22 +63,16 @@ public class FragmentContactNouveau extends FragmentContact{
         activity = (ScrollableTabsActivity) getActivity();
         idEditText = new ArrayList<>();
         idTextView = new ArrayList<>();
-        Log.d(TAG, "onCreateView: création jusqu'ici 1 ok");
 
         tNum.setText("" + ((dbAdapter.getNbLigneTable("contacts") + 1)));
-        Log.d(TAG, "onCreateView: création jusqu'ici BIHNJ ok");
         eNom.setHint("saisir");
-        Log.d(TAG, "onCreateView: création jusqu'ici 4ok");
         ePrenom.setHint("saisir");
         eTel.setHint("saisir");
-        Log.d(TAG, "onCreateView: création jusqu'ici 5 ok");
         eAdresse.setHint("saisir");
         eCp.setHint("saisir");
         eEmail.setHint("saisir");
-        Log.d(TAG, "onCreateView: création jusqu'ici 6 ok");
         eMetier.setHint("saisir");
         eSituation.setHint("saisir");
-        Log.d(TAG, "onCreateView: création jusqu'ici 3 ok");
         eNom.setText("");
         ePrenom.setText("");
         eTel.setText("");
@@ -88,9 +81,8 @@ public class FragmentContactNouveau extends FragmentContact{
         eMetier.setText("");
         eEmail.setText("");
         eSituation.setText("");
-        Log.d(TAG, "onCreateView: création jusqu'ici ok");
-        fminiature.setImageResource(R.drawable.client1);
-        nImage = 1;
+        /*fminiature.setImageResource(R.drawable.client1);
+        nImage = 1;*/
 
         return view;
     }

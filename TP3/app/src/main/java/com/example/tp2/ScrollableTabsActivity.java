@@ -1,18 +1,17 @@
 package com.example.tp2;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -32,6 +31,15 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollable_tabs);
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+
+        if (width > height) {
+            setContentView(R.layout.activity_scrollable_tabs1);
+        } else {
+            setContentView(R.layout.activity_scrollable_tabs);
+        }
 
         Toolbar menubar = findViewById(R.id.toolbar);
         setSupportActionBar(menubar);
@@ -44,7 +52,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
 
         fragments = new ArrayList<>();
-        FragmentContact fr = new FragmentContactNouveau();
+        FragmentContact fr = new FragmentContact();
         fragments.add(fr);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -74,7 +82,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         fragments.clear();
         ArrayList<Contact> contacts = a1.get_liste();
         for (Contact contact : contacts) {
-            Log.d(TAG, "loadContacts: contacts = " + contact);
             fragments.add(new FragmentContact(contact));
         }
 
@@ -254,14 +261,12 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         public void addFrag(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
-            Log.d(TAG, "addFrag: Ajouté fragment avec titre : " + title + ", Fragment : " + fragment);
             notifyDataSetChanged();
         }
 
         public void clearFragments() {
             mFragmentList.clear();
             mFragmentTitleList.clear();
-            Log.d(TAG, "clearFragments: Tous les fragments supprimés.");
             notifyDataSetChanged();
         }
 
