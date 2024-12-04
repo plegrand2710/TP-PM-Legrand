@@ -1,12 +1,12 @@
 package com.example.tp2;
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
@@ -30,22 +30,21 @@ import androidx.fragment.app.Fragment;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Locale;
+
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
-import android.widget.ImageView;
+
 
 public class FragmentContact extends Fragment {
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
     TextView tNum ;
     EditText eNom ;
     EditText ePrenom ;
@@ -64,10 +63,9 @@ public class FragmentContact extends Fragment {
     private Contact c;
     ScrollableTabsActivity activity ;
     DBAdapter bd;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_PERMISSIONS = 100;
     private String currentPhotoPath;
-    private static final String JPEG_FILE_PREFIX = "IMG_";
-    private static final String JPEG_FILE_SUFFIX = ".jpg";
-    private String nImagePath; // Chemin de l'image
 
     String TAG = "TP3";
     public FragmentContact(Contact c1) {
@@ -102,7 +100,7 @@ public class FragmentContact extends Fragment {
         outState.putString("metier", eMetier.getText().toString());
         outState.putString("situation", eSituation.getText().toString());
         outState.putInt("nImage", nImage);
-        outState.putString("imagePath", nImagePath);
+        outState.putString("imagePath", currentPhotoPath);
 
         if (libelleDonnee != null) {
             Bundle libelleBundle = new Bundle();
@@ -144,7 +142,7 @@ public class FragmentContact extends Fragment {
             if (imgFile.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                 fminiature.setImageBitmap(bitmap);
-                nImagePath = c.getCheminImage();
+                currentPhotoPath = c.getCheminImage();
             }
         }
         
@@ -213,16 +211,15 @@ public class FragmentContact extends Fragment {
             eMetier.setText(savedInstanceState.getString("metier", ""));
             eSituation.setText(savedInstanceState.getString("situation", ""));
 
-            nImagePath = savedInstanceState.getString("imagePath");
-            if (nImagePath != null) {
-                File imgFile = new File(nImagePath);
+            currentPhotoPath = savedInstanceState.getString("imagePath");
+            if (currentPhotoPath != null) {
+                File imgFile = new File(currentPhotoPath);
                 if (imgFile.exists()) {
                     Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                     fminiature.setImageBitmap(bitmap);
                 }
             }
-            nImage
-                    = savedInstanceState.getInt("nImage", 1);
+            nImage = savedInstanceState.getInt("nImage", -1);
             if (nImage > 0) {
                 image(nImage);
             }
@@ -241,34 +238,6 @@ public class FragmentContact extends Fragment {
         return view;
     }
 
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            fminiature.setImageBitmap(imageBitmap);
-            nImage = -1; // Indiquer que l'utilisateur a pris une photo au lieu de sélectionner une image prédéfinie
-            Log.d(TAG, "Photo prise avec succès et affichée.");
-        } else {
-            Log.d(TAG, "Aucune photo prise ou erreur.");
-        }
-    }
-
-    private String getAlbumName() {
-        return getString(R.string.album_name);
-    }
-
-    private void demanderPermissionCamera() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.CAMERA},
-                    REQUEST_IMAGE_CAPTURE);
-        }
-    }
     private void setUpButtonListeners() {
         // Bouton "Moins"
         view.findViewById(R.id.bouttonAvant).setOnClickListener(new View.OnClickListener() {
@@ -369,7 +338,7 @@ public class FragmentContact extends Fragment {
         view.findViewById(R.id.bPrendrePhoto).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ouvrirCamera();
+                dispatchTakePictureIntent();
             }
         });
     }
@@ -433,16 +402,105 @@ public class FragmentContact extends Fragment {
         dialog.show();
     }
 
-    private void ouvrirCamera() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            demanderPermissionCamera();
-        } else {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.e("CameraApp", "Erreur lors de la création du fichier", ex);
+            }
+
+            if (photoFile != null) {
+                Uri photoURI = getUriForFile(photoFile);
+                currentPhotoPath = photoFile.getAbsolutePath();
+                Log.d(TAG, "dispatchTakePictureIntent: lien " + currentPhotoPath);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                    REQUEST_PERMISSIONS);
+        }
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File file = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        this.getContext().sendBroadcast(mediaScanIntent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            galleryAddPic();
+            File imgFile = new File(currentPhotoPath);
+            if (imgFile.exists()) {
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    Bitmap orientedBitmap = getOrientedBitmap(bitmap, imgFile.getAbsolutePath());
+                    fminiature.setImageBitmap(orientedBitmap);
+                } catch (Exception e) {
+                    Log.e("CameraApp", "Erreur lors du traitement de l'image", e);
+                    Toast.makeText(getContext(), "Erreur lors de l'affichage de l'image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private Bitmap getOrientedBitmap(Bitmap bitmap, String imagePath) throws IOException {
+        ExifInterface exif = new ExifInterface(imagePath);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+        Matrix matrix = new Matrix();
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
+            default:
+                return bitmap; 
+        }
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
+
+    private File createImageFile() throws IOException {
+        String fileName = "IMG_" + System.currentTimeMillis();
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CameraApp");
+        return File.createTempFile(fileName, ".jpg", storageDir);
+    }
+
+    private Uri getUriForFile(File file) {
+        String authority = "com.example.tp2.fileprovider";
+        return FileProvider.getUriForFile(getContext(), authority, file);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent();
             } else {
-                Toast.makeText(getContext(), "Impossible d'accéder à la caméra", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Permissions are required to use the camera", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -530,6 +588,7 @@ public class FragmentContact extends Fragment {
 
 
     public void cSupprimer(View v){
+        Log.d(TAG, "cSupprimer: numero frag =" + (activity.obtenirPositionActuelle()+1));
         activity.supprimerContact(activity.obtenirPositionActuelle()+1);
     }
 
@@ -559,20 +618,12 @@ public class FragmentContact extends Fragment {
         }
         int miniature = nImage;
         Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleDonnee);
-        creer.setCheminImage(nImagePath);
+        creer.setCheminImage(currentPhotoPath);
         Log.d(TAG, "sauvegarder: j'ai créer le contact" + creer);
         activity.ajouterContact(creer);
         Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
     }
 
-
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(currentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        getContext().sendBroadcast(mediaScanIntent);
-    }
 
     public void image(int i){
         switch (i) {

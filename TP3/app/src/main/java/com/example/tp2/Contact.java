@@ -89,6 +89,8 @@ public class Contact {
     }
 
     public Contact(Cursor cursor, Dictionary dic) {
+        int h = cursor.getColumnIndex(DBAdapter.KEY_NUMERO);
+        this.numC = Integer.parseInt(cursor.getString(h));
         int i = cursor.getColumnIndex(DBAdapter.KEY_NOM);
         this.nom = cursor.getString(i);
         int j = cursor.getColumnIndex(DBAdapter.KEY_PRENOM);

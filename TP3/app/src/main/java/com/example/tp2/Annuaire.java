@@ -64,9 +64,30 @@ public class Annuaire {
     }
 
     public void supprimer(int id) {
+        Contact contact = dbAdapter.getContact(String.valueOf(id));
+        if (contact != null) {
+            // Affichez les détails du contact dans les logs
+            Log.d(TAG,"ContactSuppression : Suppression du contact : " +
+                    "ID: " + id + ", " +
+                    "Nom: " + contact.get_nom() + ", " +
+                    "Prénom: " + contact.get_prenom() + ", " +
+                    "Téléphone: " + contact.get_tel() + ", " +
+                    "Adresse: " + contact.get_adresse() + ", " +
+                    "Email: " + contact.get_email());
+        } else {
+            Log.d(TAG,"ContactSuppression : Aucun contact trouvé pour l'ID : " + id);
+        }
+
         long nb = dbAdapter.deleteContact(id);
         dec_num();
+
+        if (nb > 0) {
+            Log.d(TAG,"ContactSuppression : Contact supprimé avec succès, ID : " + id);
+        } else {
+            Log.d(TAG,"ContactSuppression : Échec de la suppression du contact, ID : " + id);
+        }
     }
+
 
     public void close() {
         dbAdapter.close();

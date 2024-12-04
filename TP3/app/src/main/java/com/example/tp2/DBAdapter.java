@@ -151,8 +151,26 @@ public class DBAdapter {
         return db.insert(DBAdapter.TABLE_CONTACTS, null, values);
     }
 
-    public Cursor getContact(String num) {
-        return db.query(DBAdapter.TABLE_CONTACTS, null, DBAdapter.KEY_NUMERO + "=?", new String[]{num}, null, null, null);
+    public Contact getContact(String num) {
+        Cursor cursor= db.query(DBAdapter.TABLE_CONTACTS, null, DBAdapter.KEY_NUMERO + "=?", new String[]{num}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            Contact contact = new Contact();
+            int numc = cursor.getColumnIndex("id");
+            contact.set_numC(cursor.getInt(numc));
+            int nom = cursor.getColumnIndex("nom");
+            contact.set_nom(cursor.getString(nom));
+            int prenom = cursor.getColumnIndex("prenom");
+            contact.set_prenom(cursor.getString(prenom));
+            int tel = cursor.getColumnIndex("tel");
+            contact.set_tel(cursor.getString(tel));
+            int adresse = cursor.getColumnIndex("adresse");
+            contact.set_adresse(cursor.getString(adresse));
+            int email = cursor.getColumnIndex("email");
+            contact.set_email(cursor.getString(email));
+            cursor.close();
+            return contact;
+        }
+        return null;
     }
 
     public Cursor getAllContacts() {

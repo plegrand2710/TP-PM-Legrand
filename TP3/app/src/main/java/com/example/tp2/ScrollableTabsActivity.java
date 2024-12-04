@@ -74,6 +74,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         fragments.clear();
         ArrayList<Contact> contacts = a1.get_liste();
         for (Contact contact : contacts) {
+            Log.d(TAG, "loadContacts: contacts = " + contact);
             fragments.add(new FragmentContact(contact));
         }
 
@@ -107,9 +108,29 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         bd.close();
     }
 
-    private void refreshViewPager() {
+    /*private void refreshViewPager() {
         adapter.refreshFragments(fragments);
+    }*/
+
+    private void refreshViewPager() {
+        Log.d(TAG, "Contenu actuel de l'adaptateur :");
+        for (int i = 0; i < adapter.getCount(); i++) {
+            Fragment fragment = adapter.getItem(i);
+            Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
+        }
+        adapter.clearFragments();
+        Log.d(TAG, "Contenu actuel après sup de l'adaptateur :");
+        for (int i = 0; i < adapter.getCount(); i++) {
+            Fragment fragment = adapter.getItem(i);
+            Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
+        }
+        for (Fragment fragment : fragments) {
+            adapter.addFrag(fragment, ""); // Ajouter les nouveaux fragments
+        }
+        viewPager.setAdapter(adapter); // Réappliquer l'adaptateur
+        adapter.notifyDataSetChanged(); // Notifier des changements
     }
+
 
     public void initialiseFragments() {
         setContentView(R.layout.activity_scrollable_tabs);
@@ -142,6 +163,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         adapter.refreshFragments(fragments);
+        viewPager.setAdapter(adapter);
     }
 
     public void reinitialiseFragments(){
@@ -253,10 +275,8 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             mFragmentList.addAll(newFragmentList);
             notifyDataSetChanged();
 
-            Log.d(TAG, "refreshFragments: Contenu de l'adaptateur après rafraîchissement.");
             for (int i = 0; i < mFragmentList.size(); i++) {
                 Fragment fragment = mFragmentList.get(i);
-                Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
             }
         }
     }
