@@ -64,9 +64,9 @@ public class Annuaire {
     }
 
     public void supprimer(int id) {
+        Log.d(TAG, "supprimer: je suis dans supprimer avec id = " + id + "et" + String.valueOf(id));
         Contact contact = dbAdapter.getContact(String.valueOf(id));
         if (contact != null) {
-            // Affichez les détails du contact dans les logs
             Log.d(TAG,"ContactSuppression : Suppression du contact : " +
                     "ID: " + id + ", " +
                     "Nom: " + contact.get_nom() + ", " +

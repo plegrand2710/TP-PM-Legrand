@@ -11,6 +11,7 @@ import android.util.Log;
 
 public class Contact {
 
+    private int numAffichage;
     private int numC = 0;
     private String nom ;
     private String prenom ;
@@ -32,7 +33,8 @@ public class Contact {
     public void setCheminImage(String cheminImage) {
         this.cheminImage = cheminImage;
     }
-
+    public int get_numAffichage() { return this.numAffichage ; }
+    public void set_numAffichage(int i) { this.numAffichage = i ; }
     public int get_numC() { return this.numC ; }
     public void set_numC(int i) { this.numC = i ; }
     public String get_nom()	{ return this.nom ; }

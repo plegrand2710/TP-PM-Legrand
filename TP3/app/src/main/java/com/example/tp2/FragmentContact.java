@@ -66,6 +66,7 @@ public class FragmentContact extends Fragment {
     DBAdapter bd;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_PERMISSIONS = 100;
+    private static int nbContact = 1;
     private String currentPhotoPath;
     private String type;
 
@@ -129,7 +130,6 @@ public class FragmentContact extends Fragment {
         } else {
             view = inflater.inflate(R.layout.activity_main2, container, false);
         }
-
         tNum = (TextView) view.findViewById(R.id.textViewSNum);
         eNom = (EditText) view.findViewById(R.id.editTextSNom);
         ePrenom = (EditText) view.findViewById(R.id.editTextSPrenom);
@@ -155,7 +155,7 @@ public class FragmentContact extends Fragment {
         idTextView = new ArrayList<>();
 
         if(Objects.equals(type, "normal")){
-            tNum.setText("" + (c.get_numC()+1));
+            tNum.setText("" + c.get_numAffichage());
             eNom.setText(c.get_nom().isEmpty() ? "non renseigné" : c.get_nom());
             ePrenom.setText(c.get_prenom().isEmpty() ? "non renseigné" : c.get_prenom());
             eTel.setText(c.get_tel().isEmpty() ? "non renseigné" : c.get_tel());
@@ -625,7 +625,15 @@ public class FragmentContact extends Fragment {
 
     public void cSupprimer(View v){
         Log.d(TAG, "cSupprimer: numero frag =" + (activity.obtenirPositionActuelle()+1));
-        activity.supprimerContact(activity.obtenirPositionActuelle()+1);
+        Log.d(TAG, "cSupprimer: contact = " + c);
+        Log.d(TAG, "cSupprimer: numéro de contact = " + c.get_numC());
+        if(c.get_numC() != 0){
+            Log.d(TAG, "cSupprimer: je suis là");
+            activity.supprimerContact(c.get_numC());
+        }
+        else{
+            Log.d(TAG, "cSupprimer: suppression impossible");
+        }
     }
 
 

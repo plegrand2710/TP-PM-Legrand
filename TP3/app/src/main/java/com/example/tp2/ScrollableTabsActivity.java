@@ -77,18 +77,24 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     private void loadContacts() {
         fragments.clear();
+        adapter.clearFragments();
         ArrayList<Contact> contacts = a1.get_liste();
+        int numContact = 1;
         for (Contact contact : contacts) {
+            contact.set_numAffichage(numContact++);
             fragments.add(new FragmentContact(contact));
         }
-
         if (fragments.isEmpty()) {
-            fragments.add(new FragmentContactNouveau());
+            fragments.add(new FragmentContact());
         }
-        refreshViewPager();
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        for (Fragment fragment : fragments) {
+            adapter.addFrag(fragment, "");
+        }
+        viewPager.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -103,8 +109,11 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     }
 
     public void supprimerContact(int id) {
+        Log.d(TAG, "supprimerContact: je suis dans la méthode avec id = " + id);
         bd.open();
+        Log.d(TAG, "supprimerContact: j'ai ouvert la bd");
         a1.supprimer(id);
+        Log.d(TAG, "supprimerContact: j'ai supprimer le contact");
         adapter.clearFragments();
         adapter.notifyDataSetChanged();
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -115,9 +124,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         bd.close();
     }
 
-    /*private void refreshViewPager() {
-        adapter.refreshFragments(fragments);
-    }*/
 
     private void refreshViewPager() {
         Log.d(TAG, "Contenu actuel de l'adaptateur :");
@@ -139,29 +145,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     }
 
 
-    public void initialiseFragments() {
-        setContentView(R.layout.activity_scrollable_tabs);
-        fragments.clear();
-        adapter.clearFragments();
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        fragments = new ArrayList<>();
-        a1 = new Annuaire(this);
-        if (a1.get_num() > 0) {
-            for (int i = 0; i < a1.get_num(); i++) {
-                Contact contact = a1.get_liste().get(i);
-                FragmentContact fragmentContact = new FragmentContact(contact);
-                fragments.add(fragmentContact);
-            }
-        }
-        else {
-            FragmentContact fr = new FragmentContactNouveau();
-            fragments.add(fr);
-        }
-
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-    }
-
     public void setupViewPager(ViewPager viewPager) {
         adapter.clearFragments();
         for (Fragment fragment : fragments) {
@@ -171,30 +154,6 @@ public class ScrollableTabsActivity extends AppCompatActivity {
 
         adapter.refreshFragments(fragments);
         viewPager.setAdapter(adapter);
-    }
-
-    public void reinitialiseFragments(){
-        fragments.clear();
-        Log.d(TAG, "reinitialiseFragments: reinitialisation de la liste de fragments");
-        adapter.clearFragments();
-        Log.d(TAG, "reinitialiseFragments: reinitialisation du viewpageradapter");
-        adapter.notifyDataSetChanged();
-        Log.d(TAG, "reinitialiseFragments: notification de changement");
-        if (a1.get_num() > 0) {
-            for (int i = 0; i < a1.get_num(); i++) {
-                Contact contact = a1.get_liste().get(i);
-                Log.d(TAG, "reinitialiseFragments: creation d'un contact");
-                FragmentContact fragmentContact = new FragmentContact(contact);
-                fragments.add(fragmentContact);
-                Log.d(TAG, "reinitialiseFragments: ajout au tableau de fragment");
-            }
-        }
-        Log.d(TAG, "reinitialiseFragments: fin de la lecture de l'annuaire");
-
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-
     }
 
     public Annuaire get_annuaire(){

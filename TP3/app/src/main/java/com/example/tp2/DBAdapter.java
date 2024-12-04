@@ -155,7 +155,7 @@ public class DBAdapter {
         Cursor cursor= db.query(DBAdapter.TABLE_CONTACTS, null, DBAdapter.KEY_NUMERO + "=?", new String[]{num}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
             Contact contact = new Contact();
-            int numc = cursor.getColumnIndex("id");
+            int numc = cursor.getColumnIndex("idContact");
             contact.set_numC(cursor.getInt(numc));
             int nom = cursor.getColumnIndex("nom");
             contact.set_nom(cursor.getString(nom));
