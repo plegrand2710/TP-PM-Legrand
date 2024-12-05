@@ -252,19 +252,19 @@ public class DBAdapter {
     }
 
     public void loadBD() {
-        long id = insertContact("Legrand", "pauline", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "3");
-        id = insertContact("grandle", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
-        id = insertContact("d'acc", "anthone", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "4");
-        id = insertContact("okay", "corinne", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "5");
-        id = insertChamp(0, "hebergement", "appart");
+        long id1 = insertContact("Legrand", "pauline", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "3");
+        long id2 = insertContact("grandle", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
+        long id3 = insertContact("d'acc", "anthone", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "4");
+        long id = insertContact("okay", "corinne", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "5");
+        long ic = insertChamp(0, "hebergement", "appart");
         id = insertContact("pourquoi", "camille", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "1");
         id = insertContact("choub", "anthone", "986575", "residence heimanu", "12345", "paijfz,dvkdsl@bfdbd", "etudiante", "couple", "4");
         id = insertContact("create", "corinne", "9687567", "piece du joux", "98765", "nojuhybh@nvdv", "lycee", "seul", "5");
-        id = insertChamp(1, "email2", "gfgnfgf@ndlkhnf.com");
-        id = insertChamp(2, "nom2", "comme");
-        id = insertCc(0, 1, 1);
-        id = insertCc(1, 1, 2);
-        id = insertCc(2, 0, 0);
+        long ic1 = insertChamp(1, "email2", "gfgnfgf@ndlkhnf.com");
+        long ic2 = insertChamp(2, "nom2", "comme");
+        id = insertCc(0, (int) id1, (int) ic);
+        id = insertCc(1, (int) id1, (int) ic1);
+        id = insertCc(2, (int) id3, (int) ic2);
 
     }
 
@@ -343,5 +343,18 @@ public class DBAdapter {
         return rowNumber;
     }
 
+    public void clearAllTables() {
+        open();
+        try {
+            db.execSQL("DELETE FROM " + TABLE_CONTACTS);
+            db.execSQL("DELETE FROM " + TABLE_CHAMPS);
+            db.execSQL("DELETE FROM " + TABLE_CC);
+            Log.d(TAG, "clearAllTables: Toutes les tables ont été vidées avec succès.");
+        } catch (SQLException e) {
+            Log.e(TAG, "clearAllTables: Erreur lors de la suppression du contenu des tables", e);
+        } finally {
+            close();
+        }
+    }
 
 }

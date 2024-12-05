@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
 public class ScrollableTabsActivity extends AppCompatActivity {
@@ -47,7 +48,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewpager);
         a1 = new Annuaire(this);
         bd = new DBAdapter(this);
-
+        bd.open();
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
@@ -56,8 +57,8 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         fragments.add(fr);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-        //loadContacts();
-
+        loadContacts();
+        viewPager.setOffscreenPageLimit(fragments.size());
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,16 +71,42 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_preremplir) {
-            loadContacts();
+            predefinirContacts();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void predefinirContacts() {
+        fragments.clear();
+        adapter.clearFragments();
+        bd.clearAllTables();
+        bd.open();
+        bd.loadBD();
+        Log.d(TAG, "loadContacts: j'ai rechargé la base");
+        ArrayList<Contact> contacts = a1.get_liste();
+        Log.d(TAG, "loadContacts: j'ai récupéré la base");
+        int numContact = 1;
+        for (Contact contact : contacts) {
+            contact.set_numAffichage(numContact++);
+            fragments.add(new FragmentContact(contact));
+        }
+        if (fragments.isEmpty()) {
+            fragments.add(new FragmentContact());
+        }
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        for (Fragment fragment : fragments) {
+            adapter.addFrag(fragment, "");
+        }
+        viewPager.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
     private void loadContacts() {
         fragments.clear();
         adapter.clearFragments();
+        bd.open();
         ArrayList<Contact> contacts = a1.get_liste();
         int numContact = 1;
         for (Contact contact : contacts) {
@@ -97,11 +124,9 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-
     public void ajouterContact(Contact contact) {
         bd.open();
         a1.ajout(contact);
-        //Toast.makeText(this,""+ contact, Toast.LENGTH_SHORT).show();
         FragmentContact fc = new FragmentContact(contact);
         fragments.add(fc);
         loadContacts();
@@ -125,6 +150,56 @@ public class ScrollableTabsActivity extends AppCompatActivity {
     }
 
 
+    public void sauvegarderTousLesContacts() {
+        bd.open();
+        Log.d(TAG, "sauvegarderTousLesContacts: Début de la sauvegarde");
+
+        for (Fragment fragment : fragments) {
+            try{
+                if (fragment instanceof FragmentContact) {
+                    FragmentContact contactFragment = (FragmentContact) fragment;
+
+                    Contact contact = contactFragment.sauvegarder();
+                    if (contact.get_numC() > 0) {
+                        int rowsAffected = bd.updateContact(
+                                contact.get_numC(),
+                                contact.get_numC(),
+                                contact.get_nom(),
+                                contact.get_prenom(),
+                                contact.get_tel(),
+                                contact.get_adresse(),
+                                contact.get_cp(),
+                                contact.get_email(),
+                                contact.get_metier(),
+                                contact.get_situation(),
+                                String.valueOf(contact.get_miniature())
+                        );
+
+                        if (rowsAffected > 0) {
+                            Log.d(TAG, "sauvegarderTousLesContacts: Contact mis à jour: " + contact);
+                        } else {
+                            Log.e(TAG, "sauvegarderTousLesContacts: Échec de la mise à jour du contact: " + contact);
+                        }
+                    } else {
+                        long newId = bd.insertContact(contact);
+                        if (newId > 0) {
+                            contact.set_numC((int) newId);
+                            Log.d(TAG, "sauvegarderTousLesContacts: Nouveau contact ajouté: " + contact);
+                        } else {
+                            Log.e(TAG, "sauvegarderTousLesContacts: Échec de l'ajout du contact: " + contact);
+                        }
+                    }
+                }
+            }catch(Exception e){
+                Log.d(TAG, "Erreur avec le fragment : " + fragment, e);
+            }
+        }
+
+        bd.close();
+        Toast.makeText(this, "Tous les contacts ont été sauvegardés", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "sauvegarderTousLesContacts: Fin de la sauvegarde");
+    }
+
     private void refreshViewPager() {
         Log.d(TAG, "Contenu actuel de l'adaptateur :");
         for (int i = 0; i < adapter.getCount(); i++) {
@@ -138,10 +213,10 @@ public class ScrollableTabsActivity extends AppCompatActivity {
             Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
         }
         for (Fragment fragment : fragments) {
-            adapter.addFrag(fragment, ""); // Ajouter les nouveaux fragments
+            adapter.addFrag(fragment, "");
         }
-        viewPager.setAdapter(adapter); // Réappliquer l'adaptateur
-        adapter.notifyDataSetChanged(); // Notifier des changements
+        viewPager.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
 

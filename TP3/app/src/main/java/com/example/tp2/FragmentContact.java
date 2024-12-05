@@ -73,6 +73,7 @@ public class FragmentContact extends Fragment {
     String TAG = "TP3";
     public FragmentContact(Contact c1) {
         c = c1;
+        Log.d(TAG, "FragmentContact: num contact = " + c.get_numC());
         type = "normal";
     }
 
@@ -88,7 +89,7 @@ public class FragmentContact extends Fragment {
 
         bd = new DBAdapter(getContext());
         bd.open();
-        bd.getChampsAddContact(1);
+        bd.getChampsAddContact(c.get_numC());
         bd.close();
     }
 
@@ -270,12 +271,11 @@ public class FragmentContact extends Fragment {
         }
 
         setUpButtonListeners();
-
+        Log.d(TAG, "onCreateView: fragment de contact instancié : " + c);
         return view;
     }
 
     private void setUpButtonListeners() {
-        // Bouton "Moins"
         view.findViewById(R.id.bouttonAvant).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,7 +283,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Plus"
         view.findViewById(R.id.bouttonApres).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,7 +290,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Début"
         view.findViewById(R.id.bouttonDebut).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,7 +297,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Suivant"
         view.findViewById(R.id.bouttonSuivant).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -307,7 +304,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Précédent"
         view.findViewById(R.id.bouttonPrecedent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -315,7 +311,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Fin"
         view.findViewById(R.id.bouttonFin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -323,7 +318,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Milieu"
         view.findViewById(R.id.bouttonMilieu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -331,7 +325,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Numéro"
         view.findViewById(R.id.bouttonNumero).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -339,7 +332,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Supprimer"
         view.findViewById(R.id.bouttonSupprimer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -347,7 +339,6 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Ajouter"
         view.findViewById(R.id.bouttonAjouter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -355,15 +346,13 @@ public class FragmentContact extends Fragment {
             }
         });
 
-        // Bouton "Sauvegarder"
         view.findViewById(R.id.bouttonSauvegarder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sauvegarder(v);
+                activity.sauvegarderTousLesContacts();
             }
         });
 
-        // Bouton "ajouter Champ"
         view.findViewById(R.id.bajouterChamp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -645,27 +634,46 @@ public class FragmentContact extends Fragment {
         activity.obtenirFragmentContact(activity.get_fragments().size()-1);
     }
 
-    public void sauvegarder(View v) {
+    public Contact sauvegarder() {
+        Log.d(TAG, "sauvegarder: contact sélectionné : " + c);
         libelleDonnee = new Hashtable();
+        Log.d(TAG, "sauvegarder: libelleDonnee");
         String nom = eNom.getText().toString();
+        Log.d(TAG, "sauvegarder: nom");
         String prenom = ePrenom.getText().toString();
+        Log.d(TAG, "sauvegarder: prenom");
         String tel = eTel.getText().toString();
+        Log.d(TAG, "sauvegarder: tel");
         String adresse = eAdresse.getText().toString();
+        Log.d(TAG, "sauvegarder: adresse");
         String cp = eCp.getText().toString();
+        Log.d(TAG, "sauvegarder: cp");
         String email = eEmail.getText().toString();
+        Log.d(TAG, "sauvegarder: email");
         String metier = eMetier.getText().toString();
+        Log.d(TAG, "sauvegarder: metier");
         String situation = eSituation.getText().toString();
+        Log.d(TAG, "sauvegarder: situation");
         for(int i = 0 ; i < idTextView.size() && i < idEditText.size() ; i++){
             TextView tempT = (TextView) view.findViewById(idTextView.get(i));
+            Log.d(TAG, "sauvegarder: tempt");
             EditText tempE = (EditText) view.findViewById(idEditText.get(i));
+            Log.d(TAG, "sauvegarder: tempe");
             libelleDonnee.put(tempT.getText().toString(), tempE.getText().toString());
+            Log.d(TAG, "sauvegarder: put");
         }
         int miniature = nImage;
+        Log.d(TAG, "sauvegarder: miniature");
         Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleDonnee);
+        Log.d(TAG, "sauvegarder: creer");
         creer.setCheminImage(currentPhotoPath);
-        Log.d(TAG, "sauvegarder: j'ai créer le contact" + creer);
-        activity.ajouterContact(creer);
-        Toast.makeText(view.getContext().getApplicationContext(), "Contact créé", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "sauvegarder: setchemin");
+        if(type.equals("normal")){
+            creer.set_numC(c.get_numC());
+            Log.d(TAG, "sauvegarder: setnumc");
+        }
+        Log.d(TAG, "sauvegarder: j'ai sauvegardé le contact" + creer);
+        return creer;
     }
 
 
