@@ -17,7 +17,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 public class ScrollableTabsActivity extends AppCompatActivity {
 
@@ -174,7 +176,7 @@ public class ScrollableTabsActivity extends AppCompatActivity {
                                 contact.get_situation(),
                                 String.valueOf(contact.get_miniature())
                         );
-
+                        enregistreChampSup(contact);
                         if (rowsAffected > 0) {
                             Log.d(TAG, "sauvegarderTousLesContacts: Contact mis à jour: " + contact);
                         } else {
@@ -200,25 +202,36 @@ public class ScrollableTabsActivity extends AppCompatActivity {
         Log.d(TAG, "sauvegarderTousLesContacts: Fin de la sauvegarde");
     }
 
-    private void refreshViewPager() {
-        Log.d(TAG, "Contenu actuel de l'adaptateur :");
-        for (int i = 0; i < adapter.getCount(); i++) {
-            Fragment fragment = adapter.getItem(i);
-            Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
-        }
-        adapter.clearFragments();
-        Log.d(TAG, "Contenu actuel après sup de l'adaptateur :");
-        for (int i = 0; i < adapter.getCount(); i++) {
-            Fragment fragment = adapter.getItem(i);
-            Log.d(TAG, "Fragment " + i + ": " + fragment.toString());
-        }
-        for (Fragment fragment : fragments) {
-            adapter.addFrag(fragment, "");
-        }
-        viewPager.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
+    public void enregistreChampSup(Contact contact) {
+        Dictionary<String, String> libelleDonnee = contact.get_libelleDonnee();
+        if (libelleDonnee != null && libelleDonnee.size() > 0) {
+            for (Enumeration<String> keys = libelleDonnee.keys(); keys.hasMoreElements();) {
+                String libelle = keys.nextElement();
+                String donnee = libelleDonnee.get(libelle);
 
+                int champId = bd.getChampId(libelle, donnee);
+                if (champId > 0) {
+                    Log.d(TAG, "enregistreChampSup: Champ déjà existant: " + libelle + " = " + donnee);
+                } else {
+                    champId = (int) bd.insertChamp(null, libelle, donnee);
+                    if (champId > 0) {
+                        Log.d(TAG, "enregistreChampSup: Nouveau champ ajouté: " + libelle + " = " + donnee);
+                    } else {
+                        Log.e(TAG, "enregistreChampSup: Échec de l'ajout du champ: " + libelle);
+                        continue;
+                    }
+                }
+                if (!bd.existeRelationCC(contact.get_numC(), champId)) {
+                    long lienId = bd.insertCc(null, contact.get_numC(), champId);
+                    if (lienId > 0) {
+                        Log.d(TAG, "enregistreChampSup: Lien ajouté entre contact " + contact.get_numC() + " et champ " + champId);
+                    } else {
+                        Log.e(TAG, "enregistreChampSup: Échec de l'ajout du lien pour le champ " + libelle);
+                    }
+                }
+            }
+        }
+    }
 
     public void setupViewPager(ViewPager viewPager) {
         adapter.clearFragments();

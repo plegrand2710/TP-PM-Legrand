@@ -125,7 +125,6 @@ public class Contact {
         set_situation(situation);
         set_miniature(miniature);
         set_libelleDonne(libelleDonne);
-
     }
 
     public void ajouterChamp(String libelle, String donnee){

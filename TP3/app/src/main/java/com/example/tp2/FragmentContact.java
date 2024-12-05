@@ -59,8 +59,8 @@ public class FragmentContact extends Fragment {
     int nImage = 1 ;
     View view ;
     Dictionary libelleDonnee;
-    ArrayList<Integer> idTextView = null;
-    ArrayList<Integer> idEditText = null;
+    ArrayList<Integer> idTextView = new ArrayList<>();
+    ArrayList<Integer> idEditText = new ArrayList<>();
     private Contact c;
     ScrollableTabsActivity activity ;
     DBAdapter bd;
@@ -152,8 +152,6 @@ public class FragmentContact extends Fragment {
         }
         
         activity = (ScrollableTabsActivity) getActivity();
-        idEditText = new ArrayList<>();
-        idTextView = new ArrayList<>();
 
         if(Objects.equals(type, "normal")){
             tNum.setText("" + c.get_numAffichage());
@@ -369,8 +367,6 @@ public class FragmentContact extends Fragment {
     }
 
     public void cAjouterChamp(View v) {
-        idEditText = new ArrayList<>();
-        idTextView = new ArrayList<>();
         AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
         dialog.setTitle(R.string.ajouterChamp);
 
@@ -408,12 +404,13 @@ public class FragmentContact extends Fragment {
                     idTextView.add(tv.getId());
                     idEditText.add(et1.getId());
 
+                    Log.d(TAG, "onClick: idtextview = " + idTextView);
+                    Log.d(TAG, "onClick: idedittext = " + idEditText);
+
                     tr.addView(tv);
                     tr.addView(et1);
 
                     tl.addView(tr);
-
-
                 }
             }
         });
@@ -576,7 +573,7 @@ public class FragmentContact extends Fragment {
 
     public void cMilieu(View v){
         if (activity.get_annuaire().get_num() > 0) {
-            activity.obtenirFragmentContact((activity.get_annuaire().get_num() - 1) / 2);
+            activity.obtenirFragmentContact(((activity.get_annuaire().get_num() - 1) / 2));
         }
     }
 
@@ -635,42 +632,26 @@ public class FragmentContact extends Fragment {
     }
 
     public Contact sauvegarder() {
-        Log.d(TAG, "sauvegarder: contact sélectionné : " + c);
         libelleDonnee = new Hashtable();
-        Log.d(TAG, "sauvegarder: libelleDonnee");
         String nom = eNom.getText().toString();
-        Log.d(TAG, "sauvegarder: nom");
         String prenom = ePrenom.getText().toString();
-        Log.d(TAG, "sauvegarder: prenom");
         String tel = eTel.getText().toString();
-        Log.d(TAG, "sauvegarder: tel");
         String adresse = eAdresse.getText().toString();
-        Log.d(TAG, "sauvegarder: adresse");
         String cp = eCp.getText().toString();
-        Log.d(TAG, "sauvegarder: cp");
         String email = eEmail.getText().toString();
-        Log.d(TAG, "sauvegarder: email");
         String metier = eMetier.getText().toString();
-        Log.d(TAG, "sauvegarder: metier");
         String situation = eSituation.getText().toString();
-        Log.d(TAG, "sauvegarder: situation");
         for(int i = 0 ; i < idTextView.size() && i < idEditText.size() ; i++){
             TextView tempT = (TextView) view.findViewById(idTextView.get(i));
-            Log.d(TAG, "sauvegarder: tempt");
             EditText tempE = (EditText) view.findViewById(idEditText.get(i));
-            Log.d(TAG, "sauvegarder: tempe");
             libelleDonnee.put(tempT.getText().toString(), tempE.getText().toString());
-            Log.d(TAG, "sauvegarder: put");
+            Log.d(TAG, "sauvegarder: libelledonnee = " + libelleDonnee);
         }
         int miniature = nImage;
-        Log.d(TAG, "sauvegarder: miniature");
         Contact creer = new Contact(nom, prenom, tel, adresse, cp, email, metier, situation, miniature, libelleDonnee);
-        Log.d(TAG, "sauvegarder: creer");
         creer.setCheminImage(currentPhotoPath);
-        Log.d(TAG, "sauvegarder: setchemin");
         if(type.equals("normal")){
             creer.set_numC(c.get_numC());
-            Log.d(TAG, "sauvegarder: setnumc");
         }
         Log.d(TAG, "sauvegarder: j'ai sauvegardé le contact" + creer);
         return creer;

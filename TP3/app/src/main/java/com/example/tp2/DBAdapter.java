@@ -357,4 +357,34 @@ public class DBAdapter {
         }
     }
 
+    public int getChampId(String libelle, String donnee) {
+        Cursor cursor = db.query(TABLE_CHAMPS, new String[]{KEY_IDCHAMPS},
+                KEY_LIBELLE + "=? AND " + KEY_DONNEE + "=?",
+                new String[]{libelle, donnee}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int champId = cursor.getInt(0);
+            cursor.close();
+            return champId;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return -1;
+    }
+
+    public boolean existeRelationCC(int numContact, int idChamp) {
+        Cursor cursor = db.query(TABLE_CC, null,
+                KEY_NUMCONTACT + "=? AND " + KEY_IDCHAMP + "=?",
+                new String[]{String.valueOf(numContact), String.valueOf(idChamp)},
+                null, null, null);
+
+        boolean exists = (cursor != null && cursor.moveToFirst());
+        if (cursor != null) {
+            cursor.close();
+        }
+        return exists;
+    }
+
 }
